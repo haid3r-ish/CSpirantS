@@ -1,0 +1,18 @@
+node_modules/
+dist/
+.env
+!.env.example
+.DS_Store
+*.log
+
+# Testing & Coverage
+coverage/
+.vitest/
+test-results/
+*.test.ts
+*.test.js
+*.spec.ts
+*.spec.js
+scratch-test.ts
+manual-test.ts
+tillPhase4Test/
