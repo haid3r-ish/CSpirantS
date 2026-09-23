@@ -1,0 +1,138 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum ArticleStatus {
+  DISCOVERED
+  EVALUATING
+  APPROVED
+  REJECTED
+  EXTRACTING
+  EXTRACTED
+  FAILED
+}
+
+enum PipelineStatus {
+  RUNNING
+  AWAITING_MANUAL
+  COMPLETED
+  PARTIAL
+  FAILED
+}
+
+enum PipelineStage {
+  DISCOVER
+  EVALUATE
+  EXTRACT
+  CLEANUP
+}
+
+enum LlmBatchMode {
+  API
+  MANUAL
+}
+
+enum LlmBatchStatus {
+  PENDING
+  SENT
+  AWAITING_MANUAL
+  COMPLETED
+  FAILED
+}
+
+
+
+model User {
+  id         String    @id @default(cuid())
+  email      String    @unique
+  name       String
+  googleId   String    @unique
+  avatarUrl  String?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  sessions   Session[]
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  userId    String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([expiresAt])
+}
+
+model ScraperSource {
+  id        String    @id @default(cuid())
+  name      String    @unique
+  domain    String    @unique
+  isActive  Boolean   @default(true)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  articles  Article[]
+}
+
+model PipelineRun {
+  id           String         @id @default(cuid())
+  status       PipelineStatus @default(RUNNING)
+  currentStage PipelineStage  @default(DISCOVER)
+  sourceIds    String[]
+  stats        Json           @db.JsonB
+  startedAt    DateTime       @default(now())
+  completedAt  DateTime?
+  error        String?
+  articles     Article[]
+  llmBatch     LlmBatch?
+}
+
+model Article {
+  id               String        @id @default(cuid())
+  hash             String        @unique
+  sourceId         String
+  source           ScraperSource @relation(fields: [sourceId], references: [id])
+  pipelineRunId    String
+  pipelineRun      PipelineRun   @relation(fields: [pipelineRunId], references: [id])
+  title            String
+  url              String
+  description      String?
+  category         String?
+  status           ArticleStatus @default(DISCOVERED)
+  fullContent      String?       @db.Text
+  extractedData    Json?         @db.JsonB
+  metadataExpiresAt DateTime?
+  contentExpiresAt DateTime?
+  discoveredAt     DateTime      @default(now())
+  evaluatedAt      DateTime?
+  extractedAt      DateTime?
+  updatedAt        DateTime      @updatedAt
+
+  @@index([pipelineRunId, status])
+  @@index([hash])
+  @@index([metadataExpiresAt])
+  @@index([contentExpiresAt])
+  @@index([extractedData], type: Gin)
+}
+
+model LlmBatch {
+  id               String         @id @default(cuid())
+  pipelineRunId    String         @unique
+  pipelineRun      PipelineRun    @relation(fields: [pipelineRunId], references: [id])
+  mode             LlmBatchMode
+  status           LlmBatchStatus @default(PENDING)
+  promptCsv        String         @db.Text
+  response         String?        @db.Text
+  approvedHashes   String[]       @default([])
+  promptTokens     Int?
+  completionTokens Int?
+  estimatedCostUsd Float?
+  createdAt        DateTime       @default(now())
+  completedAt      DateTime?
+}
+
