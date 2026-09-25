@@ -78,6 +78,8 @@ When a task is completed, you MUST update this file in **TWO** locations:
 | 5-1a | Patch: Fix Pipeline Trigger API | 2026-09-22 | apps/api/src/modules/pipeline/pipeline.service.ts |
 | 5-2 | Manual LLM Batch Resolution API | 2026-09-22 | apps/api/src/modules/pipeline/llm-batch.* |
 | 5-3 | Articles Public API | 2026-09-22 | apps/api/src/modules/articles/* |
+| 1-1a | Global Error Handler Overhaul | 2026-09-25 | apps/api/src/core/errors.ts, error-handler.ts, etc. |
+| 2-3c | Dawn Parser Date Guard | 2026-09-25 | packages/scraper-core/src/parsers/errors.ts, etc. |
 
 ---
 
@@ -98,6 +100,8 @@ When a task is completed, you MUST update this file in **TWO** locations:
 | 1-3 | Redis & BullMQ Setup | `feat(task-1-3): Redis & BullMQ Setup` | ✅ Pushed |
 | 1-4b | Vocabulary Proxy API | `feat(task-1-4b): Vocabulary Proxy API` | ✅ Pushed |
 | 1-5 | Scraper Source CRUD API | `feat(task-1-5): Scraper Source CRUD API` | ✅ Pushed |
+| 1-1a | Global Error Handler Overhaul | `feat(task-1-1a): Global Error Handler Overhaul` | ✅ Pushed |
+| 2-3c | Dawn Parser Date Guard | `feat(task-2-3c): Dawn Parser Date Guard` | ✅ Pushed |
 
 ---
 
@@ -203,6 +207,8 @@ When a task is completed, you MUST update this file in **TWO** locations:
 | apps/api/src/modules/articles/articles.routes.ts | Created | 5-3 |
 | apps/api/src/modules/articles/articles.service.ts | Created | 5-3 |
 | apps/api/src/core/server.ts | Modified | 5-3 |
+| apps/api/src/core/errors.ts | Created | 1-1a |
+| packages/scraper-core/src/parsers/errors.ts | Created | 2-3c |
 ---
 
 ## Architecture Decisions Log
