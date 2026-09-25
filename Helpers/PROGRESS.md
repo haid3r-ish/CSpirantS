@@ -80,6 +80,7 @@ When a task is completed, you MUST update this file in **TWO** locations:
 | 5-3 | Articles Public API | 2026-09-22 | apps/api/src/modules/articles/* |
 | 1-1a | Global Error Handler Overhaul | 2026-09-25 | apps/api/src/core/errors.ts, error-handler.ts, etc. |
 | 2-3c | Dawn Parser Date Guard | 2026-09-25 | packages/scraper-core/src/parsers/errors.ts, etc. |
+| 4-4a | Fix: TTL Cleanup Schedule & Init | 2026-09-25 | apps/api/src/queue/schedulers.ts, apps/api/src/index.ts |
 
 ---
 
@@ -101,7 +102,14 @@ When a task is completed, you MUST update this file in **TWO** locations:
 | 1-4b | Vocabulary Proxy API | `feat(task-1-4b): Vocabulary Proxy API` | ✅ Pushed |
 | 1-5 | Scraper Source CRUD API | `feat(task-1-5): Scraper Source CRUD API` | ✅ Pushed |
 | 1-1a | Global Error Handler Overhaul | `feat(task-1-1a): Global Error Handler Overhaul` | ✅ Pushed |
+| 2-1 | @repo/scraper-core Package Init & URL Hasher | `feat(task-2-1): @repo/scraper-core Package Init & URL Hasher` | ✅ Pushed |
+| 2-2 | JSON-LD Parser & Field Transforms | `feat(task-2-2): JSON-LD Parser & Field Transforms` | ✅ Pushed |
+| 2-3 | Declarative Extractor | `feat(task-2-3): Declarative Extractor` | ✅ Pushed |
+| 2-3a | @repo/scraper-core Base Parser & Registry | `feat(task-2-3a): @repo/scraper-core Base Parser & Registry` | ✅ Pushed |
+| 2-3b | Dawn News Parser Implementation | `feat(task-2-3b): Dawn News Parser Implementation` | ✅ Pushed |
 | 2-3c | Dawn Parser Date Guard | `feat(task-2-3c): Dawn Parser Date Guard` | ✅ Pushed |
+| 2-4 | HybridFetchEngine with Playwright Stealth | `feat(task-2-4): HybridFetchEngine with Playwright Stealth` | ✅ Pushed |
+| 4-4a | Fix: TTL Cleanup Schedule & Init | `fix(task-4-4a): Run TTL cleanup after 1min & call setupSchedulers` | ✅ Pushed |
 
 ---
 
@@ -209,6 +217,8 @@ When a task is completed, you MUST update this file in **TWO** locations:
 | apps/api/src/core/server.ts | Modified | 5-3 |
 | apps/api/src/core/errors.ts | Created | 1-1a |
 | packages/scraper-core/src/parsers/errors.ts | Created | 2-3c |
+| apps/api/src/queue/schedulers.ts | Modified | 4-4a |
+| apps/api/src/index.ts | Modified | 4-4a |
 ---
 
 ## Architecture Decisions Log
@@ -408,6 +418,10 @@ Notes: Centralized error handling. Removed try/catch anti-pattern from all route
 Task 2-3c: Dawn Parser Date Guard — COMPLETED 2026-09-25T14:38:00Z
 Files: packages/scraper-core/src/parsers/errors.ts (created), base.parser.ts (modified), dawn.parser.ts (modified), scraper-core/src/index.ts (modified), apps/api/src/pipeline/stage-discover.ts (modified)
 Notes: Added StaleDataError and verifyPageDate mechanism to BaseSiteParser. Dawn parser now calls verifyPageDate() at start of discoverLinks. stage-discover.ts extracts targetDate from the pipeline run and passes it through. Stale pages are gracefully skipped.
+
+Task 4-4a: Fix: TTL Cleanup Schedule & Init — COMPLETED 2026-09-25T17:19:00Z
+Files: apps/api/src/queue/schedulers.ts, apps/api/src/index.ts
+Notes: Setup a 1-minute delayed job in schedulers.ts for 'enforce-ttl-policies' so that it runs right after the server starts, in addition to its normal 2 AM schedule. Also, imported and called setupSchedulers() in index.ts to ensure schedulers are actually initialized when the server starts.
 ---
 
 ## Future Suggestions & Technical Debt
