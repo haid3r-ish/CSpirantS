@@ -3,6 +3,7 @@ import { fastifyOauth2 } from '@fastify/oauth2';
 import { config } from '../../core/config.js';
 import * as authService from './auth.service.js';
 import { requireAuth } from './auth.middleware.js';
+import { UnauthorizedError } from '../../core/errors.js';
 
 export async function authRoutes(server: FastifyInstance) {
   server.register(fastifyOauth2, {
@@ -28,7 +29,7 @@ export async function authRoutes(server: FastifyInstance) {
     });
 
     if (!userinfoResponse.ok) {
-      throw new Error('Failed to fetch user info from Google');
+      throw new UnauthorizedError('Failed to fetch user info from Google');
     }
 
     const googleProfile = await userinfoResponse.json() as {

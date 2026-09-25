@@ -28,6 +28,9 @@ When a task is completed, you MUST update this file in **TWO** locations:
 4. **`## Future Suggestions & Technical Debt` Table**
    - If a feature is deferred, an architectural shortcut is taken, or a future enhancement is discussed with the user, log it in this table.
    - Ensure you provide a clear description and the specific task where it was discussed so it can be easily referenced later.
+
+5. **`## Git Commit Registry` Table**
+   - When tasks are committed and pushed to GitHub, log the Task ID, Commit Message, and Push Status in this table.
 -->
 
 ## Current Task
@@ -69,11 +72,32 @@ When a task is completed, you MUST update this file in **TWO** locations:
 | 4-2 | Stage 2 — Evaluate Worker | 2026-09-09 | apps/api/src/pipeline/stage-evaluate.ts, apps/api/src/pipeline/workers/evaluate.worker.ts |
 | 4-3 | Stage 3 — Extract Worker | 2026-09-10 | apps/api/src/pipeline/stage-extract.ts, extract.worker.ts |
 | 4-3a | Stage 3 Extract — Code-First Parser Integration | 2026-09-19 | apps/api/src/pipeline/stage-extract.ts |
+| 4-3b | Fix PipelineRun Status Stuck in RUNNING | 2026-09-23 | apps/api/src/pipeline/stage-extract.ts |
 | 4-4 | Maintenance Worker & Cron Schedulers | 2026-09-10 | apps/api/src/queue/schedulers.ts, apps/api/src/pipeline/workers/maintenance.worker.ts |
 | 5-1 | Pipeline Trigger & Status API | 2026-09-22 | apps/api/src/modules/pipeline/pipeline.* |
 | 5-1a | Patch: Fix Pipeline Trigger API | 2026-09-22 | apps/api/src/modules/pipeline/pipeline.service.ts |
 | 5-2 | Manual LLM Batch Resolution API | 2026-09-22 | apps/api/src/modules/pipeline/llm-batch.* |
 | 5-3 | Articles Public API | 2026-09-22 | apps/api/src/modules/articles/* |
+
+---
+
+## Git Commit Registry
+
+> Remote Repository: [haid3r-ish/CSpirantS](https://github.com/haid3r-ish/CSpirantS)  
+> Target Branch: `main`  
+> Last Pushed: 2026-09-23  
+
+| Task ID | Task Name | Commit Message | Push Status |
+|---------|-----------|----------------|-------------|
+| 0-1 | Initialize Turborepo Monorepo | `feat(task-0-1): Initialize Turborepo Monorepo` | ✅ Pushed |
+| 0-2 | Initialize @repo/db (Prisma) | `feat(task-0-2): Initialize @repo/db (Prisma)` | ✅ Pushed |
+| 0-3 | Initialize @repo/types | `feat(task-0-3): Initialize @repo/types` | ✅ Pushed |
+| 0-4 | Docker Compose & Environment Files | `feat(task-0-4): Docker Compose & Environment Files` | ✅ Pushed |
+| 1-1 | Fastify Server Setup | `feat(task-1-1): Fastify Server Setup` | ✅ Pushed |
+| 1-2 | Google OAuth & Session Auth | `feat(task-1-2): Google OAuth & Session Auth` | ✅ Pushed |
+| 1-3 | Redis & BullMQ Setup | `feat(task-1-3): Redis & BullMQ Setup` | ✅ Pushed |
+| 1-4b | Vocabulary Proxy API | `feat(task-1-4b): Vocabulary Proxy API` | ✅ Pushed |
+| 1-5 | Scraper Source CRUD API | `feat(task-1-5): Scraper Source CRUD API` | ✅ Pushed |
 
 ---
 
@@ -166,6 +190,7 @@ When a task is completed, you MUST update this file in **TWO** locations:
 | apps/api/src/pipeline/stage-extract.ts | Created | 4-3 |
 | apps/api/src/pipeline/workers/extract.worker.ts | Created | 4-3 |
 | apps/api/src/pipeline/stage-extract.ts | Modified | 4-3a |
+| apps/api/src/pipeline/stage-extract.ts | Modified | 4-3b |
 | apps/api/src/queue/schedulers.ts | Created | 4-4 |
 | apps/api/src/pipeline/workers/maintenance.worker.ts | Created | 4-4 |
 | apps/api/src/modules/pipeline/pipeline.routes.ts | Created | 5-1 |
@@ -364,6 +389,15 @@ Notes: Added support for `LLM_MODEL` env var and updated default Gemini model to
 Task Dev-Config: Mute Prisma Query Logs — COMPLETED 2026-09-23T00:12:00Z
 Files: packages/db/src/index.ts
 Notes: Muted verbose SQL query logs in development mode to clean up the console.
+
+Task 4-3b: Fix PipelineRun Status Stuck in RUNNING — COMPLETED 2026-09-23T23:35:00Z
+Files: apps/api/src/pipeline/stage-extract.ts (modified)
+Notes: Added status: COMPLETED and completedAt to the final pipelineRun.update call in runExtractStage.
+
+Task 1-1a: Global Error Handler Overhaul — COMPLETED 2026-09-25T13:38:00Z
+Files: apps/api/src/core/errors.ts (created), error-handler.ts (modified), server.ts (modified), pipeline.routes.ts (modified), llm-batch.routes.ts (modified), articles.routes.ts (modified), articles.service.ts (modified), source.routes.ts (modified), vocab.routes.ts (modified)
+Notes: Centralized error handling. Removed try/catch anti-pattern from all route files. Added NotFoundHandler and AppError hierarchy.
+  - *Sub-task 1-1a.1 (Service & Auth Patch)*: Updated `auth.middleware.ts`, `auth.routes.ts`, `pipeline.service.ts`, and `llm-batch.service.ts` to replace manual `reply.status(401)` and generic `throw new Error()` calls with specific `AppError` subclasses.
 
 ---
 
