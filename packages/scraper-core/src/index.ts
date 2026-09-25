@@ -5,3 +5,4 @@ export { closePlaywrightBrowser } from './engine/playwright-adapter.js';
 
 export { BaseSiteParser, getParser, registerParser } from './parsers/index.js';
 export type { DiscoveredLink, ExtractedArticle } from './parsers/base.parser.js';
+export { StaleDataError } from './parsers/errors.js';

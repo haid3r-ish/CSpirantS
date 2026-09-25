@@ -399,6 +399,9 @@ Files: apps/api/src/core/errors.ts (created), error-handler.ts (modified), serve
 Notes: Centralized error handling. Removed try/catch anti-pattern from all route files. Added NotFoundHandler and AppError hierarchy.
   - *Sub-task 1-1a.1 (Service & Auth Patch)*: Updated `auth.middleware.ts`, `auth.routes.ts`, `pipeline.service.ts`, and `llm-batch.service.ts` to replace manual `reply.status(401)` and generic `throw new Error()` calls with specific `AppError` subclasses.
 
+Task 2-3c: Dawn Parser Date Guard — COMPLETED 2026-09-25T14:38:00Z
+Files: packages/scraper-core/src/parsers/errors.ts (created), base.parser.ts (modified), dawn.parser.ts (modified), scraper-core/src/index.ts (modified), apps/api/src/pipeline/stage-discover.ts (modified)
+Notes: Added StaleDataError and verifyPageDate mechanism to BaseSiteParser. Dawn parser now calls verifyPageDate() at start of discoverLinks. stage-discover.ts extracts targetDate from the pipeline run and passes it through. Stale pages are gracefully skipped.
 ---
 
 ## Future Suggestions & Technical Debt

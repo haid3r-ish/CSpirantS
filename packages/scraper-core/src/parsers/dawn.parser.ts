@@ -5,6 +5,14 @@ import { parseJsonLd, getJsonLdField } from '../extractor/json-ld.js';
 
 class DawnParser extends BaseSiteParser {
   domain = 'dawn.com';
+  dateSelector = 'nav.story-date time, .timestamp, [class*="date"]';
+
+  normalizeDateString(raw: string): string {
+    // Dawn format: "Tuesday, September 23, 2026" → "2026-09-23"
+    const d = new Date(raw.replace(/^[A-Za-z]+,\s*/, '')); // strip day name
+    if (isNaN(d.getTime())) return raw;
+    return d.toISOString().split('T')[0];
+  }
 
   getIndexUrls(): string[] {
     const today = new Date().toISOString().split('T')[0];
@@ -17,7 +25,11 @@ class DawnParser extends BaseSiteParser {
     ];
   }
 
-  discoverLinks(html: string, baseUrl: string): DiscoveredLink[] {
+  discoverLinks(html: string, baseUrl: string, targetDate?: string): DiscoveredLink[] {
+    if (targetDate) {
+      this.verifyPageDate(html, targetDate);
+    }
+    
     const $ = cheerio.load(html);
     const skipDescription = baseUrl.includes('/pakistan') || baseUrl.includes('/world');
     const seen = new Set<string>();
