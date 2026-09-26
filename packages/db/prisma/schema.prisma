@@ -15,6 +15,7 @@ enum ArticleStatus {
   EXTRACTING
   EXTRACTED
   FAILED
+  DEDUPLICATED
 }
 
 enum PipelineStatus {
@@ -72,11 +73,13 @@ model Session {
 model ScraperSource {
   id        String    @id @default(cuid())
   name      String    @unique
-  domain    String    @unique
-  isActive  Boolean   @default(true)
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  articles  Article[]
+  domain         String    @unique
+  isActive       Boolean   @default(true)
+  dedupeGroup    String?
+  dedupePriority Int       @default(0)
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  articles       Article[]
 }
 
 model PipelineRun {
@@ -112,18 +115,16 @@ model Article {
   evaluatedAt      DateTime?
   extractedAt      DateTime?
   updatedAt        DateTime      @updatedAt
-  mergedIntoId     String?
-  mergedInto       Article?      @relation("ArticleMerge", fields: [mergedIntoId], references: [id], onDelete: SetNull)
-  mergedFrom       Article[]     @relation("ArticleMerge")
-  alsoCoveredBy    String[]      @default([])
+  alsoCoveredBy    Json?         @db.JsonB
+  canonicalArticleId String?
 
   @@index([pipelineRunId, status])
   @@index([hash])
   @@index([metadataExpiresAt])
   @@index([contentExpiresAt])
   @@index([extractedData], type: Gin)
-  @@index([mergedIntoId])
   @@index([status, discoveredAt])
+  @@index([canonicalArticleId])
 }
 
 model LlmBatch {
