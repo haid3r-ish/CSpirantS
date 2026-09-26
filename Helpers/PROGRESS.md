@@ -93,6 +93,7 @@ When a task is completed, you MUST update this file in **TWO** locations:
 | 4-5c | Slot Lock — Redis NX Lock | 2026-09-26 | apps/api/src/queue/slot-lock.ts |
 | 9-2 | LLM Prompt — Add Dedup Response to Evaluate | 2026-09-26 | packages/types, packages/llm-core |
 | 9-3 | Evaluate Stage — Process LLM Dedup Groups | 2026-09-26 | apps/api/src/pipeline/stage-evaluate.ts |
+| 4-5d | Slot Scheduler Logic | 2026-09-26 | apps/api/src/pipeline/slot-scheduler.ts |
 
 ---
 
@@ -133,6 +134,7 @@ When a task is completed, you MUST update this file in **TWO** locations:
 | 4-5c | Slot Lock — Redis NX Lock | `feat(task-4-5c): Slot Lock Redis NX Lock` | ✅ Pushed |
 | 9-2 | LLM Prompt — Add Dedup Response to Evaluate | `feat(task-9-2): LLM Prompt Add Dedup Response to Evaluate` | ✅ Pushed |
 | 9-3 | Evaluate Stage — Process LLM Dedup Groups | `feat(task-9-3): Evaluate Stage Process LLM Dedup Groups` | ✅ Pushed |
+| 4-5d | Slot Scheduler Logic | `feat(task-4-5d): Slot Scheduler Logic` | ✅ Pushed |
 
 ---
 
@@ -264,6 +266,7 @@ When a task is completed, you MUST update this file in **TWO** locations:
 | packages/llm-core/src/providers/base.provider.ts | Modified | 9-2 |
 | apps/api/src/pipeline/stage-evaluate.ts | Modified | 9-3 |
 | packages/types/src/pipeline.types.ts | Modified | 9-3 |
+| apps/api/src/pipeline/slot-scheduler.ts | Created | 4-5d |
 ---
 
 ## Architecture Decisions Log
@@ -528,3 +531,7 @@ Notes: LLM returns two-line CSV: line 1 = approved hashes, line 2 = pipe-separat
 Task 9-3: Evaluate Stage — Process LLM Dedup Groups — COMPLETED 2026-09-26T21:32:00Z
 Files: apps/api/src/pipeline/stage-evaluate.ts, packages/types/src/pipeline.types.ts
 Notes: stage-evaluate now processes duplicateGroups from LLM response. Marks DEDUPLICATED with canonicalArticleId and stores CoveredByEntry[] on canonical alsoCoveredBy. Group boundary guard prevents cross-group dedup. DEDUPE_ENABLED config guard.
+
+Task 4-5d: Slot Scheduler Logic — COMPLETED 2026-09-26T21:37:00Z
+Files: apps/api/src/pipeline/slot-scheduler.ts
+Notes: Slot lock + direct pipeline trigger per slot. Pool/threshold accumulation deferred to future task (keys present in config).
