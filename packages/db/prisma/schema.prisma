@@ -112,12 +112,18 @@ model Article {
   evaluatedAt      DateTime?
   extractedAt      DateTime?
   updatedAt        DateTime      @updatedAt
+  mergedIntoId     String?
+  mergedInto       Article?      @relation("ArticleMerge", fields: [mergedIntoId], references: [id], onDelete: SetNull)
+  mergedFrom       Article[]     @relation("ArticleMerge")
+  alsoCoveredBy    String[]      @default([])
 
   @@index([pipelineRunId, status])
   @@index([hash])
   @@index([metadataExpiresAt])
   @@index([contentExpiresAt])
   @@index([extractedData], type: Gin)
+  @@index([mergedIntoId])
+  @@index([status, discoveredAt])
 }
 
 model LlmBatch {
