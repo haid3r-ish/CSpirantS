@@ -1,10 +1,5 @@
-import type { VocabLookupResult } from '@repo/types';
+import type { VocabProvider, NormalizedVocabEntry } from '@repo/types';
 import { z } from 'zod';
-
-interface VocabProvider {
-  name: string;
-  lookup: (word: string) => Promise<VocabLookupResult | null>;
-}
 
 const englishDictSchema = z.object({
   word: z.string(),
@@ -18,25 +13,21 @@ const englishDictSchema = z.object({
   antonyms: z.array(z.string()).optional(),
 }).passthrough();
 
-function adaptEnglishDictApi(raw: z.infer<typeof englishDictSchema>): VocabLookupResult {
-  return {
-    word: raw.word,
-    forms: raw.forms ?? [],
-    partsOfSpeech: raw.partsOfSpeech?.map((pos) => ({
-      partOfSpeech: pos.partOfSpeech,
-      definitions: (pos.senses || pos.definitions || []).map((d) => ({
-        definition: d.definition,
-        example: d.example,
-      })),
-    })) ?? [],
-    synonyms: raw.synonyms ?? [],
-    antonyms: raw.antonyms ?? [],
-  };
-}
+export class DictionaryApiProvider implements VocabProvider {
+  name = 'englishdictionaryapi.com';
 
-const englishDictProvider: VocabProvider = {
-  name: 'englishdictionaryapi.com',
-  lookup: async (word: string) => {
+  private adapt(raw: z.infer<typeof englishDictSchema>): NormalizedVocabEntry {
+    return {
+      word: raw.word,
+      phonetic: undefined, // this API doesn't seem to provide a flat phonetic string by default
+      meanings: raw.partsOfSpeech?.map((pos) => ({
+        partOfSpeech: pos.partOfSpeech,
+        definitions: (pos.senses || pos.definitions || []).map((d) => d.definition),
+      })) ?? [],
+    };
+  }
+
+  async lookup(word: string): Promise<NormalizedVocabEntry | null> {
     const res = await fetch(`https://englishdictionaryapi.com/api/v1/words/${encodeURIComponent(word)}`);
     if (res.status === 429 || res.status >= 500) {
       throw new Error(`rate-limit-or-server-error: ${res.status}`);
@@ -49,9 +40,9 @@ const englishDictProvider: VocabProvider = {
     }
     const rawData = await res.json();
     const parsed = englishDictSchema.parse(rawData);
-    return adaptEnglishDictApi(parsed);
+    return this.adapt(parsed);
   }
-};
+}
 
 const freeDictEntrySchema = z.object({
   word: z.string(),
@@ -70,35 +61,22 @@ const freeDictEntrySchema = z.object({
 });
 const freeDictResponseSchema = z.array(freeDictEntrySchema).min(1);
 
-function adaptFreeDictionaryApi(raw: z.infer<typeof freeDictResponseSchema>): VocabLookupResult {
-  const entry = raw[0];
-  
-  const allSynonyms = new Set<string>();
-  const allAntonyms = new Set<string>();
-  
-  entry.meanings.forEach(meaning => {
-    meaning.synonyms?.forEach(s => allSynonyms.add(s));
-    meaning.antonyms?.forEach(a => allAntonyms.add(a));
-  });
+export class FreeDictionaryApiProvider implements VocabProvider {
+  name = 'api.dictionaryapi.dev';
 
-  return {
-    word: entry.word,
-    forms: [],
-    partsOfSpeech: entry.meanings.map(m => ({
-      partOfSpeech: m.partOfSpeech,
-      definitions: m.definitions.map(d => ({
-        definition: d.definition,
-        example: d.example,
-      }))
-    })),
-    synonyms: Array.from(allSynonyms).slice(0, 10),
-    antonyms: Array.from(allAntonyms).slice(0, 10),
-  };
-}
+  private adapt(raw: z.infer<typeof freeDictResponseSchema>): NormalizedVocabEntry {
+    const entry = raw[0];
+    return {
+      word: entry.word,
+      phonetic: entry.phonetics?.find(p => p.text)?.text,
+      meanings: entry.meanings.map(m => ({
+        partOfSpeech: m.partOfSpeech,
+        definitions: m.definitions.map(d => d.definition)
+      })),
+    };
+  }
 
-const freeDictionaryProvider: VocabProvider = {
-  name: 'api.dictionaryapi.dev',
-  lookup: async (word: string) => {
+  async lookup(word: string): Promise<NormalizedVocabEntry | null> {
     const res = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${encodeURIComponent(word)}`);
     if (res.status === 429 || res.status >= 500) {
       throw new Error(`rate-limit-or-server-error: ${res.status}`);
@@ -111,16 +89,16 @@ const freeDictionaryProvider: VocabProvider = {
     }
     const rawData = await res.json();
     const parsed = freeDictResponseSchema.parse(rawData);
-    return adaptFreeDictionaryApi(parsed);
+    return this.adapt(parsed);
   }
-};
+}
 
 const PROVIDERS: VocabProvider[] = [
-  englishDictProvider,
-  freeDictionaryProvider,
+  new DictionaryApiProvider(),
+  new FreeDictionaryApiProvider(),
 ];
 
-export async function lookupWord(word: string): Promise<VocabLookupResult | null> {
+export async function lookupWord(word: string): Promise<NormalizedVocabEntry | null> {
   const normalized = word.toLowerCase().trim();
   for (const provider of PROVIDERS) {
     try {

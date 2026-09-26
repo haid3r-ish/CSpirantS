@@ -22,6 +22,58 @@
 9. Use async/await, never raw Promise chains.
 10. Export types and functions explicitly — do not use `export default` for named utilities.
 
+## Index of Tasks
+
+| Task ID | Name | Lines | Purpose |
+|---|---|---|---|
+| 0-1 | Initialize Turborepo Monorepo | 46-84 | **Goal**: Monorepo scaffold with pnpm + turborepo. All package.json and tsconfig files created. `pnp... |
+| 0-2 | Initialize @repo/db (Prisma) | 85-132 | **Goal**: packages/db exists with full Prisma schema. `pnpm --filter @repo/db db:generate` succeeds.... |
+| 0-3 | Initialize @repo/types | 133-170 | **Goal**: packages/types exists. All 6 type files created. `pnpm --filter @repo/types typecheck` suc... |
+| 0-4 | Docker Compose & Environment Files | 171-217 | **Goal**: `docker-compose up -d postgres redis` starts both services. Both pass health checks. .env.... |
+| 1-1 | Fastify Server Setup | 218-253 | **Goal**: `pnpm --filter @apps/api dev` starts server. `curl http://localhost:3001/health` returns `... |
+| 1-2 | Google OAuth & Session Auth | 254-291 | **Goal**: GET /auth/google redirects to Google OAuth. After Google callback, user is created in DB a... |
+| 1-3 | Redis & BullMQ Setup | 292-320 | **Goal**: Redis connects on startup. All queues instantiated. orchestrator.triggerPipeline can be ca... |
+| 1-4a | Schema & Types Cleanup (Vocab) | 321-366 | **Goal**: Remove the obsolete `VocabEntry` Prisma model and replace the `vocab.types.ts` with the ne... |
+| 1-4b | Vocabulary Proxy API | 367-406 | **Goal**: `GET /api/vocab/lookup?word=economy` returns a structured response by proxying the externa... |
+| 1-4c | Vocabulary Proxy — Fallback Provider Pattern & Adapters | 407-558 | **Goal**: Refactor `vocab.service.ts` to use a prioritized, multi-provider fallback chain (minimum 2... |
+| 1-5 | Scraper Source CRUD API | 559-593 | **Goal**: CRUD endpoints for ScraperSource. All 4 operations work with valid data. Invalid config bo... |
+| 2-1 | @repo/scraper-core Package Init & URL Hasher | 594-626 | **Goal**: Package scaffold created. URL hash generator works exactly as specified. |
+| 2-2 | JSON-LD Parser & Field Transforms | 627-656 | **Goal**: Parser accurately extracts NewsArticle schema and transforms apply correctly. |
+| 2-3 | Declarative Extractor | 657-686 | **Goal**: Extractor falls back correctly and applies transforms. |
+| 2-4 | HybridFetchEngine with Playwright Stealth | 687-719 | **Goal**: Hybrid engine falls back to playwright on cloudflare blocks. |
+| 3-1 | @repo/llm-core Package Init & Formatter | 720-752 | **Goal**: Formatting and parsing logic for LLM batch processing. |
+| 3-2 | Base Provider & Gemini Provider | 753-782 | **Goal**: Robust provider class handling API calls and fallback. |
+| 3-2a | Environment-driven LLM Model Configuration | 783-815 | **Goal**: Update the LLM configuration to read the model name from the environment instead of hardco... |
+| 3-3 | Prerequisite Task 3-3 (Mini): LlmProviderFactory + Manual Provider | 816-886 | **Goal**: Implement a minimal LlmProviderFactory and a ManualProvider stub. This is the missing fact... |
+| 4-1 | Stage 1 — Discover Worker | 887-921 | **Goal**: Worker fetches indexes, hashes URLs, and saves DISCOVERED articles. |
+| 4-2 | Stage 2 — Evaluate Worker (Revised) | 922-966 | **Goal**: Single LLM call per run to approve/reject articles. Uses createLlmProvider factory driven ... |
+| 4-3 | Stage 3 — Extract Worker | 967-999 | **Goal**: Fetch full content for APPROVED articles. |
+| 4-4 | Maintenance Worker & Cron Schedulers | 1000-1030 | **Goal**: Cron logic for TTL and daily triggers. |
+| 5-1 | Pipeline Trigger & Status API | 1031-1059 | **Goal**: API to start and track pipeline runs. |
+| 5-2 | Manual LLM Batch Resolution API | 1060-1089 | **Goal**: Endpoints for admins to process manual batches. |
+| 5-3 | Articles Public API | 1090-1118 | **Goal**: Paginated read access to EXTRACTED articles. |
+| 6-1 | Vite App Scaffold & API Client | 1119-1154 | **Goal**: `pnpm --filter @apps/web dev` starts. Axios client ready. |
+| 6-2 | Router & Auth Guard | 1155-1185 | **Goal**: Authentication gating for frontend routes. |
+| 6-3 | AppShell, Sidebar & Dashboard | 1186-1217 | **Goal**: Main layout and dashboard module grid. |
+| 6-4 | News Feed & Article View with Local Vocab Storage | 1218-1254 | **Goal**: News reader with word-click vocab popup. "Save Word" stores to Zustand + IndexedDB (offlin... |
+| 7-1 | Pipeline Admin Page | 1255-1285 | **Goal**: Live dashboard for pipeline runs. |
+| 7-2 | Manual Batch Admin Page | 1286-1314 | **Goal**: Resolve LLM batches manually via UI. |
+| 8-1 | Wire Up All Routes & Workers at Server Start | 1315-1342 | **Goal**: API fully functional on boot. |
+| 8-2 | Dockerfiles & Production Build | 1343-1391 | **Goal**: Production ready docker-compose. |
+| 1-1a | Global Error Handler Overhaul | 1431-1510 | **Goal**: Centralize all error handling. Remove per-route try/catch anti-pattern. Dev errors must log to console with full stack traces. |
+| 4-3b | Fix PipelineRun Status Stuck in RUNNING | 1511-1545 | **Goal**: After extract stage completes, update PipelineRun to status COMPLETED with completedAt timestamp. |
+| 2-3c | Dawn Parser Date Guard (Anti-Duplication) | 1546-1700 | **Goal**: Prevent Dawn parser from saving duplicate articles when Dawn serves previous day's page. |
+| IP-4 | Vocab API Separate Interfaces | - | **Goal**: Interfaces for DictionaryAPI and FreeDictionaryAPI; raw payload + source tag. |
+| IP-5 | DB Cleanup + LlmBatch Status Filter | - | **Goal**: TTL for PipelineRun/LlmBatch; fix batch route query param. |
+| IP-6 | LLM Batch Route Path Correction | - | **Goal**: Fix batch routes to `/api/pipeline/llm-batches` + add `getBatchById`. |
+| 9-1 | Prisma Schema — Dedupe Fields | - | **Goal**: Add `mergedIntoId`, `alsoCoveredBy`, and indexes. |
+| 4-5a | Config — Add Slot & Dedupe Env Vars | - | **Goal**: 7 new pipeline config keys with defaults. |
+| 4-5b | Redis Pool Helpers | - | **Goal**: Atomic pool drain and threshold read/write utilities. |
+| 4-5c | Slot Lock — Redis NX lock | - | **Goal**: Acquire/release slot lock with 30-min auto-expiry. |
+| 4-5d | Slot Scheduler Logic | - | **Goal**: Core slot decision logic (discover → pool → threshold → process/hold). |
+| 4-5e | S1chedulers — Wire 4 Cron Slots | - | **Goal**: Replace 4 AM cron with 10, 14, 18, 00 slots. |
+| 9-2 | Cross-Source Dedupe Stage | - | **Goal**: Prompt and LLM logic to dedupe articles based on same story. |
+| 9-3 | Wire Dedupe into Midnight Slot | - | **Goal**: Execute dedupe at midnight and filter feed from merged articles. |
 ## Environment Variables Reference
 
 | Variable Name | Used In | Example Value | Required? |
@@ -1388,3 +1440,602 @@ The following tasks were dynamically generated during the Pivot 1 Architecture R
    - Goal: Rewrite the discover worker to use the parser registry instead of the declarative engine.
 6. **Task 4-3a: Stage 3 Extract — Code-First Parser Integration**
    - Goal: Rewrite the extract worker to use the parser registry.
+
+---
+
+## Bug Fix Addendum (Post Phase 5 Patches)
+
+The following tasks address bugs discovered during manual testing of the completed pipeline. They must be implemented in order (1-1a → 4-3b → 2-3c) as 4-3b depends on 1-1a's `errors.ts` file.
+
+### Task 1-1a: Global Error Handler Overhaul
+
+**Goal**: Centralize all error handling. Remove per-route `try/catch` anti-pattern. In development, all errors must be logged to console with full stack traces and returned in the HTTP response.
+
+**Target Files**:
+- `apps/api/src/core/errors.ts` — CREATE
+- `apps/api/src/core/error-handler.ts` — MODIFY
+- `apps/api/src/core/server.ts` — MODIFY
+- `apps/api/src/modules/pipeline/pipeline.routes.ts` — MODIFY
+- `apps/api/src/modules/pipeline/llm-batch.routes.ts` — MODIFY
+- `apps/api/src/modules/articles/articles.routes.ts` — MODIFY
+- `apps/api/src/modules/articles/articles.service.ts` — MODIFY
+- `apps/api/src/modules/scraper/source.routes.ts` — MODIFY
+- `apps/api/src/modules/vocab/vocab.routes.ts` — MODIFY
+
+**Blueprint References**:
+- N/A
+
+**Detailed LLM Instructions**:
+
+**Step 1** — Create `apps/api/src/core/errors.ts`:
+```typescript
+export class AppError extends Error {
+  constructor(public readonly statusCode: number, message: string) {
+    super(message);
+    this.name = this.constructor.name;
+  }
+}
+export class NotFoundError extends AppError {
+  constructor(message = 'Resource not found') { super(404, message); }
+}
+export class BadRequestError extends AppError {
+  constructor(message: string) { super(400, message); }
+}
+export class UnauthorizedError extends AppError {
+  constructor(message = 'Unauthorized') { super(401, message); }
+}
+export class ConflictError extends AppError {
+  constructor(message: string) { super(409, message); }
+}
+```
+
+**Step 2** — Modify `apps/api/src/core/error-handler.ts`:
+- Import `AppError` from `./errors.js`.
+- In `setErrorHandler`: first check `instanceof AppError` and reply with `error.statusCode` + `error.message`.
+- For unhandled errors (statusCode >= 500), **always** call `server.log.error(error)`.
+- If `config.NODE_ENV === 'development'`, include `stack: error.stack` in the 500 JSON body.
+- After the `setErrorHandler`, call `server.setNotFoundHandler((request, reply) => { reply.status(404).send({ statusCode: 404, error: 'Not Found', message: `Route ${request.method}:${request.url} not found` }); })`.
+
+**Step 3** — Strip `try/catch` from routes. For each of the following files, remove ALL `try/catch` blocks and all manual `reply.status(4xx).send(...)` calls. Let errors bubble up to the global handler:
+- `pipeline.routes.ts`: Remove all 4 try/catch wrappers.
+- `llm-batch.routes.ts`: Remove all 3 try/catch wrappers.
+- `articles.routes.ts`: Remove all 2 try/catch wrappers.
+- `source.routes.ts`: Remove all try/catch wrappers.
+
+**Step 4** — Fix `vocab.routes.ts`. Change `safeParse` to throwing `parse()`:
+```typescript
+// BEFORE (remove this pattern):
+const query = querySchema.safeParse(request.query);
+if (!query.success) { return reply.status(400).send(...); }
+
+// AFTER (use this instead):
+const query = querySchema.parse(request.query); // throws ZodError, caught globally
+```
+The `if (!result)` check for word not found can remain as a direct `throw new NotFoundError('Word not found')`.
+
+**Step 5** — In `articles.service.ts`, change `throw new Error('Article not found')` to `throw new NotFoundError('Article not found')`, importing from `../../core/errors.js`.
+
+**⚠️ Conflict Check**:
+- `auth.routes.ts` already has no `try/catch` wrappers — do NOT touch it.
+- `ZodError` handling already exists in `error-handler.ts` — preserve it.
+
+**Integration Check**:
+After this task, the global error handler in `error-handler.ts` is the single source of truth for all error responses. No route handler should return an error response directly.
+
+**Verification**:
+1. Hit `GET /api/pipeline/llm-batches` (wrong URL) → must get `{ statusCode: 404, error: "Not Found", message: "Route GET:/api/pipeline/llm-batches not found" }`.
+2. Hit `GET /api/articles?limit=abc` → must get `{ statusCode: 400, error: "Bad Request", message: "Validation failed", issues: [...] }`.
+3. Hit a valid route while the DB is disconnected → must see full stack trace in terminal AND in response body (dev only).
+
+**PROGRESS.md Update**:
+Append this exact text:
+```
+Task 1-1a: Global Error Handler Overhaul — COMPLETED [ISO timestamp]
+Files: apps/api/src/core/errors.ts (created), error-handler.ts (modified), server.ts (modified), pipeline.routes.ts (modified), llm-batch.routes.ts (modified), articles.routes.ts (modified), articles.service.ts (modified), source.routes.ts (modified), vocab.routes.ts (modified)
+Notes: Centralized error handling. Removed try/catch anti-pattern from all route files. Added NotFoundHandler and AppError hierarchy.
+```
+
+---
+
+### Task 4-3b: Fix PipelineRun Status Stuck in RUNNING
+
+**Goal**: After the extract stage completes, the `PipelineRun` record must be updated to `status: 'COMPLETED'` with a `completedAt` timestamp.
+
+**Target Files**:
+- `apps/api/src/pipeline/stage-extract.ts` — MODIFY
+
+**Blueprint References**:
+- N/A
+
+**Detailed LLM Instructions**:
+
+In `stage-extract.ts`, locate the final `prisma.pipelineRun.update` call near the bottom of the `runExtractStage` function (currently around line 98). It currently only updates `stats`. Change it to also set `status` and `completedAt`:
+
+```typescript
+// BEFORE:
+await prisma.pipelineRun.update({
+  where: { id: pipelineRunId },
+  data: { stats: stats as unknown as object },
+});
+
+// AFTER:
+await prisma.pipelineRun.update({
+  where: { id: pipelineRunId },
+  data: {
+    stats: stats as unknown as object,
+    status: 'COMPLETED',
+    completedAt: new Date(),
+  },
+});
+```
+
+**⚠️ Conflict Check**:
+- `completedAt DateTime?` and the `COMPLETED` status enum value already exist in the Prisma schema. No schema migration needed.
+- Do NOT change the `status: 'EXTRACTING'` or `status: 'EXTRACTED'` / `status: 'FAILED'` updates on individual `Article` records. Only the `PipelineRun` record needs this fix.
+
+**Integration Check**:
+The `GET /api/pipeline/:runId` endpoint reads the `PipelineRun` record's `status` directly from DB. Once this fix is applied, polling that endpoint after a successful run will return `status: "COMPLETED"`.
+
+**Verification**:
+1. Trigger a full pipeline run via `POST /api/pipeline/trigger`.
+2. Wait for extraction to complete (check terminal logs for `[ExtractWorker] Job completed`).
+3. Hit `GET /api/pipeline/:runId` → status must be `"COMPLETED"` and `completedAt` must be a valid timestamp.
+4. Open Prisma Studio → `PipelineRun` table → confirm `status = COMPLETED` and `completedAt` is populated.
+
+**PROGRESS.md Update**:
+Append this exact text:
+```
+Task 4-3b: Fix PipelineRun Status Stuck in RUNNING — COMPLETED [ISO timestamp]
+Files: apps/api/src/pipeline/stage-extract.ts (modified)
+Notes: Added status: COMPLETED and completedAt to the final pipelineRun.update call in runExtractStage.
+```
+
+---
+
+### Task 2-3c: Dawn Parser Date Guard (Anti-Duplication)
+
+**Goal**: Prevent the Dawn parser from scraping and saving duplicate articles when Dawn's server silently serves the previous day's index page.
+
+**Target Files**:
+- `packages/scraper-core/src/parsers/errors.ts` — CREATE
+- `packages/scraper-core/src/parsers/base.parser.ts` — MODIFY
+- `packages/scraper-core/src/parsers/dawn.parser.ts` — MODIFY
+- `packages/scraper-core/src/index.ts` — MODIFY
+- `apps/api/src/pipeline/stage-discover.ts` — MODIFY
+
+**Blueprint References**:
+- N/A
+
+**Detailed LLM Instructions**:
+
+**Step 1** — Create `packages/scraper-core/src/parsers/errors.ts`:
+```typescript
+export class StaleDataError extends Error {
+  constructor(public readonly requestedDate: string, public readonly foundDate: string) {
+    super(`Stale page detected: requested ${requestedDate}, page shows ${foundDate}`);
+    this.name = 'StaleDataError';
+  }
+}
+```
+
+**Step 2** — Modify `packages/scraper-core/src/parsers/base.parser.ts`:
+- Add optional `dateSelector?: string` — CSS selector that points to the date element on the index page.
+- Add optional method `normalizeDateString(raw: string): string` — converts the raw extracted string to `YYYY-MM-DD`. Default implementation returns the string as-is.
+- Add a concrete `verifyPageDate(html: string, targetDate: string): void` method:
+  ```typescript
+  import * as cheerio from 'cheerio';
+  import { StaleDataError } from './errors.js';
+  
+  verifyPageDate(html: string, targetDate: string): void {
+    if (!this.dateSelector) return; // guard: skip if parser has no selector
+    const $ = cheerio.load(html);
+    const raw = $(this.dateSelector).first().text().trim();
+    if (!raw) return; // can't determine date, skip guard
+    const normalized = this.normalizeDateString(raw);
+    if (normalized !== targetDate) {
+      throw new StaleDataError(targetDate, normalized);
+    }
+  }
+  ```
+- Change the `discoverLinks` signature to: `abstract discoverLinks(html: string, baseUrl: string, targetDate?: string): DiscoveredLink[]`
+
+**Step 3** — Modify `packages/scraper-core/src/parsers/dawn.parser.ts`:
+- Set `dateSelector = 'nav.story-date time, .timestamp, [class*="date"]'` — inspect the actual Dawn HTML to find the correct selector for the archive date heading (e.g., "Tuesday, September 23, 2026"). Update the selector string accordingly.
+- Override `normalizeDateString(raw: string): string`:
+  ```typescript
+  normalizeDateString(raw: string): string {
+    // Dawn format: "Tuesday, September 23, 2026" → "2026-09-23"
+    const d = new Date(raw.replace(/^[A-Za-z]+,\s*/, '')); // strip day name
+    if (isNaN(d.getTime())) return raw;
+    return d.toISOString().split('T')[0];
+  }
+  ```
+- At the start of `discoverLinks(html, baseUrl, targetDate?)`, before the Cheerio `.each()` loop, add:
+  ```typescript
+  if (targetDate) {
+    this.verifyPageDate(html, targetDate);
+  }
+  ```
+
+**Step 4** — Export from `packages/scraper-core/src/index.ts`:
+Add `export { StaleDataError } from './parsers/errors.js';`
+
+**Step 5** — Modify `apps/api/src/pipeline/stage-discover.ts`:
+- Extract `targetDate` from the pipeline run:
+  ```typescript
+  const pipelineRun = await prisma.pipelineRun.findUnique({ where: { id: pipelineRunId } });
+  const targetDate = pipelineRun!.createdAt.toISOString().split('T')[0];
+  ```
+- Pass `targetDate` to `discoverLinks`:
+  ```typescript
+  // BEFORE:
+  const discoveredLinks = parser.discoverLinks(result.html, url);
+  // AFTER:
+  const discoveredLinks = parser.discoverLinks(result.html, url, targetDate);
+  ```
+- Import `StaleDataError` from `@repo/scraper-core` and catch it specifically in the per-URL try/catch:
+  ```typescript
+  } catch (error) {
+    if (error instanceof StaleDataError) {
+      console.warn(`[Discover] Skipping stale page ${url}: ${error.message}`);
+      continue; // skip URL, don't increment failed counter
+    }
+    // re-throw all other errors
+    throw error;
+  }
+  ```
+
+**⚠️ Conflict Check**:
+- The `discoverLinks` signature change (adding optional `targetDate?`) is backward-compatible. The `?` makes it optional, so parsers that don't implement date verification continue to work without any changes.
+- The `stage-extract.ts` also calls parser methods but uses `extractArticle()` — not `discoverLinks()` — so no conflict there.
+- The `4-3b` task only touches `stage-extract.ts`. This task only touches `stage-discover.ts`. No overlap.
+
+**Integration Check**:
+- If Dawn's index URL returns yesterday's articles (stale), `discoverLinks` throws `StaleDataError`.
+- `stage-discover.ts` catches it, logs a warning, and skips to the next URL — the pipeline run does not fail.
+- All other URLs in the `indexUrls` list continue to be processed normally.
+
+**Verification**:
+1. Temporarily set all Dawn index URLs to tomorrow's date (e.g., `2026-09-24`).
+2. Trigger a pipeline run.
+3. Check terminal logs: must see `[Discover] Skipping stale page ... Stale page detected` warning for each Dawn URL.
+4. Check DB: 0 articles should be DISCOVERED for the dawn.com source in this run.
+5. Restore URLs to today's date and confirm normal discovery resumes.
+
+**PROGRESS.md Update**:
+Append this exact text:
+```
+Task 2-3c: Dawn Parser Date Guard — COMPLETED [ISO timestamp]
+Files: packages/scraper-core/src/parsers/errors.ts (created), base.parser.ts (modified), dawn.parser.ts (modified), scraper-core/src/index.ts (modified), apps/api/src/pipeline/stage-discover.ts (modified)
+Notes: Added StaleDataError and verifyPageDate mechanism to BaseSiteParser. Dawn parser now calls verifyPageDate() at start of discoverLinks. stage-discover.ts extracts targetDate from the pipeline run and passes it through. Stale pages are gracefully skipped.
+```
+
+### Task IP-4: Vocab API Separate Interfaces
+
+**Goal**: Define provider interfaces for DictionaryAPI and FreeDictionaryAPI; split service logic.
+
+**Target Files**:
+- `packages/types/src/vocab.interfaces.ts` — CREATE
+- `apps/api/src/modules/vocab/vocab.service.ts` — MODIFY
+
+**Blueprint References**:
+- Implementation Plan Issue 4
+
+**Detailed LLM Instructions**:
+- `vocab.interfaces.ts`: define `interface DictionaryApiResponse`, `interface FreeDictionaryApiResponse`, `interface VocabProvider { lookup(word: string): Promise<NormalizedVocabEntry> }`.
+- `NormalizedVocabEntry`: `{ word, phonetic, meanings: { partOfSpeech, definitions: string[] }[] }`.
+- `vocab.service.ts`: Implement two provider classes for `VocabProvider`. Primary = DictionaryAPI; fallback = FreeDictionaryAPI. Call primary; on failure, call fallback.
+- Do NOT write to DB (current architecture: proxy only).
+
+**Integration Check**:
+`GET /api/vocab/lookup?word=economy` returns same structure.
+
+**Verification**:
+Mock 500 for DictionaryAPI; verify fallback provider responds correctly.
+
+**PROGRESS.md Update**:
+Append this exact text:
+```
+Task IP-4: Vocab API Separate Interfaces — COMPLETED [ISO timestamp]
+Files: packages/types/src/vocab.interfaces.ts, apps/api/src/modules/vocab/vocab.service.ts
+Notes: Defined VocabProvider interface; DictionaryAPI primary, FreeDictionaryAPI fallback.
+```
+
+### Task IP-5: DB Cleanup + LlmBatch Status Filter
+
+**Goal**: TTL cleanup for PipelineRun/LlmBatch; fix batch route to accept all statuses.
+
+**Target Files**:
+- `apps/api/src/pipeline/workers/maintenance.worker.ts` — MODIFY
+- `apps/api/src/modules/pipeline/llm-batch.routes.ts` — MODIFY
+- `apps/api/src/modules/pipeline/llm-batch.service.ts` — MODIFY
+
+**Blueprint References**:
+- Implementation Plan Issue 5
+
+**Detailed LLM Instructions**:
+- `maintenance.worker.ts`: in `enforce-ttl-policies`, add Prisma Raw SQL: `DELETE FROM "LlmBatch" WHERE "createdAt" < NOW() - INTERVAL '7 days'`.
+- Also add: `DELETE FROM "PipelineRun" WHERE "completedAt" < NOW() - INTERVAL '7 days' AND status != 'RUNNING'`.
+- `llm-batch.routes.ts` GET route: add optional Zod filter: `status: z.enum(['PENDING','SENT','AWAITING_MANUAL','COMPLETED','FAILED']).optional()`.
+- `llm-batch.service.ts` `getPendingBatches`: accept optional `status` param; use as filter; if omitted, return all statuses.
+
+**Integration Check**:
+Admin UI that currently relies on `AWAITING_MANUAL` filter must now pass `?status=AWAITING_MANUAL`.
+
+**Verification**:
+`GET /api/pipeline/batches` returns all statuses.
+
+**PROGRESS.md Update**:
+Append this exact text:
+```
+Task IP-5: DB Cleanup + LlmBatch Status Filter — COMPLETED [ISO timestamp]
+Files: apps/api/src/pipeline/workers/maintenance.worker.ts, llm-batch.routes.ts, llm-batch.service.ts
+Notes: Added TTL for PipelineRun/LlmBatch; GET batch route accepts status filter.
+```
+
+### Task IP-6: LLM Batch Route Path Correction + getBatchById
+
+**Goal**: Fix all batch routes to `/api/pipeline/llm-batches`; add GET by ID.
+
+**Target Files**:
+- `apps/api/src/modules/pipeline/llm-batch.routes.ts` — MODIFY
+- `apps/api/src/modules/pipeline/llm-batch.service.ts` — MODIFY
+
+**Blueprint References**:
+- Implementation Plan Issue 6
+
+**Detailed LLM Instructions**:
+- Rename route prefixes: `GET /api/pipeline/batches` → `GET /api/pipeline/llm-batches`, and `/:id/prompt`, `/:id/resolve`.
+- Add new route: `GET /api/pipeline/llm-batches/:id`; Zod validate `:id`.
+- `llm-batch.service.ts`: add `getBatchById(id: string)` → `prisma.llmBatch.findUnique({ where: { id }, include: { pipelineRun: true } })`; throw `NotFoundError` if null.
+
+**Integration Check**:
+Old path `/api/pipeline/batches` will now 404.
+
+**Verification**:
+`GET /api/pipeline/llm-batches/:validId` returns batch; invalid ID returns 404.
+
+**PROGRESS.md Update**:
+Append this exact text:
+```
+Task IP-6: LLM Batch Route Path Correction + getBatchById — COMPLETED [ISO timestamp]
+Files: apps/api/src/modules/pipeline/llm-batch.routes.ts, llm-batch.service.ts
+Notes: Renamed routes to /llm-batches; added getBatchById endpoint.
+```
+
+### Task 9-1: Prisma Schema — Dedupe Fields
+
+**Goal**: Add dedupe schema fields to Article and create migration.
+
+**Target Files**:
+- `packages/db/prisma/schema.prisma` — MODIFY
+
+**Blueprint References**:
+- Target Architecture (Cross-Source Deduplication)
+
+**Detailed LLM Instructions**:
+- Add `mergedIntoId String?` with self-relation FK, `onDelete: SetNull`.
+- Add `alsoCoveredBy String[] @default([])`.
+- Add `@@index([mergedIntoId])` and `@@index([status, discoveredAt])`.
+- Run `pnpm --filter @repo/db db:migrate dev --name add_dedupe_fields`.
+
+**Integration Check**:
+Existing articles get `mergedIntoId = NULL` automatically.
+
+**Verification**:
+`db:generate` compiles without error.
+
+**PROGRESS.md Update**:
+Append this exact text:
+```
+Task 9-1: Prisma Schema Dedupe Fields — COMPLETED [ISO timestamp]
+Files: packages/db/prisma/schema.prisma
+Notes: Added mergedIntoId (self-FK), alsoCoveredBy (String[]), and indexes.
+```
+
+### Task 4-5a: Config — Add Slot & Dedupe Env Vars
+
+**Goal**: Add 7 new pipeline config keys with defaults.
+
+**Target Files**:
+- `apps/api/src/core/config.ts` — MODIFY
+
+**Blueprint References**:
+- Target Architecture (Config)
+
+**Detailed LLM Instructions**:
+- Add to Zod schema (optional with defaults): `PROCESS_THRESHOLD_START` (20), `PROCESS_THRESHOLD_REDUCTION` (5), `PROCESS_THRESHOLD_FLOOR` (5), `FORCE_PROCESS_HOUR` (0), `DEDUPE_ENABLED` (true), `DEDUPE_BATCH_SIZE` (30), `DEDUPE_WINDOW_HOURS` (24).
+
+**Integration Check**:
+Server boots with defaults if env vars are missing.
+
+**Verification**:
+Verify validation logic sets default correctly if empty.
+
+**PROGRESS.md Update**:
+Append this exact text:
+```
+Task 4-5a: Config Slot & Dedupe Env Vars — COMPLETED [ISO timestamp]
+Files: apps/api/src/core/config.ts
+Notes: Added 7 new pipeline scheduling and dedupe config keys.
+```
+
+### Task 4-5b: Redis Pool Helpers
+
+**Goal**: Atomic pool drain and threshold read/write utilities.
+
+**Target Files**:
+- `apps/api/src/queue/pool-state.ts` — CREATE
+
+**Blueprint References**:
+- Target Architecture (Redis State)
+
+**Detailed LLM Instructions**:
+- Export `addToPool(articleIds: string[])`, `drainPool(): Promise<string[]>`, `getThreshold(dateKey: string): Promise<number>`, `setThreshold(dateKey: string, value: number): Promise<void>`.
+- Use Redis `pipeline:threshold:YYYY-MM-DD` for threshold. Use `RPUSH` for `addToPool`. Use atomic Lua script or multi/exec `LRANGE 0 -1` then `DEL` for `drainPool`.
+
+**Integration Check**:
+Does not touch Prisma. Pure Redis.
+
+**Verification**:
+Call `addToPool` then `drainPool`; verify it is empty on next read.
+
+**PROGRESS.md Update**:
+Append this exact text:
+```
+Task 4-5b: Redis Pool State Helpers — COMPLETED [ISO timestamp]
+Files: apps/api/src/queue/pool-state.ts
+Notes: Atomic pool drain + day-scoped threshold key management.
+```
+
+### Task 4-5c: Slot Lock — Redis NX lock
+
+**Goal**: Acquire/release a Redis slot lock before pipeline trigger.
+
+**Target Files**:
+- `apps/api/src/queue/slot-lock.ts` — CREATE
+
+**Blueprint References**:
+- Target Architecture (Constraints)
+
+**Detailed LLM Instructions**:
+- Export `acquireSlotLock(): Promise<boolean>` (`SET pipeline:slot-running 1 NX EX 1800`).
+- Export `releaseSlotLock(): Promise<void>` (`DEL pipeline:slot-running`).
+
+**Integration Check**:
+Prevents overlap of runs across 30 mins.
+
+**Verification**:
+Acquire lock returns true; acquire again returns false.
+
+**PROGRESS.md Update**:
+Append this exact text:
+```
+Task 4-5c: Slot Lock — COMPLETED [ISO timestamp]
+Files: apps/api/src/queue/slot-lock.ts
+Notes: Redis NX slot lock with 30-min auto-expiry.
+```
+
+### Task 4-5d: Slot Scheduler Logic
+
+**Goal**: Core slot decision function.
+
+**Target Files**:
+- `apps/api/src/pipeline/slot-scheduler.ts` — CREATE
+
+**Blueprint References**:
+- Target Architecture (Scheduling)
+
+**Detailed LLM Instructions**:
+- Export `runSlot(hour: number): Promise<void>`.
+- `acquireSlotLock()`; if false, return.
+- `runDiscoverStage` across all sources; push new IDs to pool (`addToPool`).
+- Read pool size and threshold.
+- If hour == `FORCE_PROCESS_HOUR` OR pool >= threshold: trigger pipeline, drain pool, reset threshold to `PROCESS_THRESHOLD_START`.
+- Else: reduce threshold (clamped to `PROCESS_THRESHOLD_FLOOR`), hold pool.
+- Log decision. `releaseSlotLock()` in `finally`.
+
+**Integration Check**:
+`triggerPipeline` called safely.
+
+**Verification**:
+Dry-run test to verify threshold resets only on condition matching.
+
+**PROGRESS.md Update**:
+Append this exact text:
+```
+Task 4-5d: Slot Scheduler Logic — COMPLETED [ISO timestamp]
+Files: apps/api/src/pipeline/slot-scheduler.ts
+Notes: Core slot decision logic (discover → pool → threshold → trigger).
+```
+
+### Task 4-5e: Schedulers — Wire 4 Cron Slots
+
+**Goal**: Replace 4 AM cron with 10, 14, 18, 00 slots.
+
+**Target Files**:
+- `apps/api/src/queue/schedulers.ts` — MODIFY
+- `apps/api/src/pipeline/workers/maintenance.worker.ts` — MODIFY
+
+**Blueprint References**:
+- Target Architecture (Scheduling)
+
+**Detailed LLM Instructions**:
+- `schedulers.ts`: Add `slot-10`, `slot-14`, `slot-18`, `slot-00` job schedulers (cron: `0 10 * * *`, etc.) passing `{ hour: N }`.
+- Remove `daily-pipeline-scheduler`.
+- `maintenance.worker.ts`: handler for `run-pipeline-slot` calls `runSlot(job.data.hour)`.
+
+**Integration Check**:
+TTL jobs are preserved.
+
+**Verification**:
+`setupSchedulers()` executes cleanly.
+
+**PROGRESS.md Update**:
+Append this exact text:
+```
+Task 4-5e: Schedulers 4-Slot Cron — COMPLETED [ISO timestamp]
+Files: apps/api/src/queue/schedulers.ts, apps/api/src/pipeline/workers/maintenance.worker.ts
+Notes: Replaced daily cron with 4 specific hour slots calling runSlot.
+```
+
+### Task 9-2: Cross-Source Dedupe Stage
+
+**Goal**: Dedupe service that calls LLM and writes merged fields.
+
+**Target Files**:
+- `packages/llm-core/src/prompts/cross-source-dedupe.ts` — CREATE
+- `apps/api/src/pipeline/stage-dedupe.ts` — CREATE
+
+**Blueprint References**:
+- Target Architecture (Cross-Source Deduplication)
+
+**Detailed LLM Instructions**:
+- Create prompt template instructing LLM to group articles representing the same story into `{ groupId, articleIndices: number[] }`.
+- `stage-dedupe.ts`: fetch articles in `DEDUPE_WINDOW_HOURS` with `mergedIntoId IS NULL` and `status = 'EXTRACTED'`.
+- Batch into `DEDUPE_BATCH_SIZE`. Call LLM.
+- For each returned group, earliest is primary. Others are updated with `mergedIntoId = primary.id`. Primary is updated with `alsoCoveredBy` list.
+
+**Integration Check**:
+Idempotent process that guards with `mergedIntoId IS NULL`.
+
+**Verification**:
+Run function on array of mock duplicate articles; verify PRISMA update logic handles the list correctly.
+
+**PROGRESS.md Update**:
+Append this exact text:
+```
+Task 9-2: Cross-Source Dedupe Stage — COMPLETED [ISO timestamp]
+Files: packages/llm-core/src/prompts/cross-source-dedupe.ts, apps/api/src/pipeline/stage-dedupe.ts
+Notes: LLM batch dedupe logic using Zod validation and self-FK updates.
+```
+
+### Task 9-3: Wire Dedupe into Midnight Slot
+
+**Goal**: Execute dedupe at midnight and filter feed from merged articles.
+
+**Target Files**:
+- `apps/api/src/pipeline/slot-scheduler.ts` — MODIFY
+- `apps/api/src/modules/articles/articles.service.ts` — MODIFY
+
+**Blueprint References**:
+- Target Architecture (Cross-Source Deduplication)
+
+**Detailed LLM Instructions**:
+- `slot-scheduler.ts`: If `hour === 0` and `config.DEDUPE_ENABLED`, call `runDedupeStage()`. Wrap in try/catch to not crash the slot.
+- `articles.service.ts`: Update feed query to `where: { mergedIntoId: null }` and include `alsoCoveredBy` in the select.
+
+**Integration Check**:
+Dedupe executes after midnight processing. Feed excludes merged items.
+
+**Verification**:
+`GET /api/articles` payload shape contains `alsoCoveredBy: string[]` and drops the duplicates.
+
+**PROGRESS.md Update**:
+Append this exact text:
+```
+Task 9-3: Wire Dedupe into Midnight Slot — COMPLETED [ISO timestamp]
+Files: apps/api/src/pipeline/slot-scheduler.ts, apps/api/src/modules/articles/articles.service.ts
+Notes: Dedupe execution at hour 0; feed API updated to exclude merged articles.
+```
+

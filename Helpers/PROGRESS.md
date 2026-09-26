@@ -81,6 +81,7 @@ When a task is completed, you MUST update this file in **TWO** locations:
 | 1-1a | Global Error Handler Overhaul | 2026-09-25 | apps/api/src/core/errors.ts, error-handler.ts, etc. |
 | 2-3c | Dawn Parser Date Guard | 2026-09-25 | packages/scraper-core/src/parsers/errors.ts, etc. |
 | 4-4a | Fix: TTL Cleanup Schedule & Init | 2026-09-25 | apps/api/src/queue/schedulers.ts, apps/api/src/index.ts |
+| IP-4 | Vocab API Separate Interfaces | 2026-09-26 | packages/types/src/vocab.interfaces.ts, apps/api/src/modules/vocab/vocab.service.ts, packages/types/src/index.ts |
 
 ---
 
@@ -219,6 +220,9 @@ When a task is completed, you MUST update this file in **TWO** locations:
 | packages/scraper-core/src/parsers/errors.ts | Created | 2-3c |
 | apps/api/src/queue/schedulers.ts | Modified | 4-4a |
 | apps/api/src/index.ts | Modified | 4-4a |
+| packages/types/src/vocab.interfaces.ts | Created | IP-4 |
+| apps/api/src/modules/vocab/vocab.service.ts | Modified | IP-4 |
+| packages/types/src/index.ts | Modified | IP-4 |
 ---
 
 ## Architecture Decisions Log
@@ -435,3 +439,7 @@ Notes: Setup a 1-minute delayed job in schedulers.ts for 'enforce-ttl-policies' 
 | **Pipeline API** | Single Article Scrape Endpoint | Add an endpoint which basically scrapes a particular article on demand. | Future | 🟡 Deferred |
 
 ---
+
+Task IP-4: Vocab API Separate Interfaces — COMPLETED 2026-09-26T08:55:00Z
+Files: packages/types/src/vocab.interfaces.ts, apps/api/src/modules/vocab/vocab.service.ts, packages/types/src/index.ts
+Notes: Defined VocabProvider interface; DictionaryAPI primary, FreeDictionaryAPI fallback.
