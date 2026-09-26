@@ -82,6 +82,8 @@ When a task is completed, you MUST update this file in **TWO** locations:
 | 2-3c | Dawn Parser Date Guard | 2026-09-25 | packages/scraper-core/src/parsers/errors.ts, etc. |
 | 4-4a | Fix: TTL Cleanup Schedule & Init | 2026-09-25 | apps/api/src/queue/schedulers.ts, apps/api/src/index.ts |
 | IP-4 | Vocab API Separate Interfaces | 2026-09-26 | packages/types/src/vocab.interfaces.ts, apps/api/src/modules/vocab/vocab.service.ts, packages/types/src/index.ts |
+| IP-4a | Vocab API Unified Schema & Fallback Priority | 2026-09-26 | packages/types/src/vocab.interfaces.ts, apps/api/src/modules/vocab/vocab.service.ts |
+| IP-4b | Vocab API Schema Decoupling | 2026-09-26 | apps/api/src/modules/vocab/vocab.service.ts |
 
 ---
 
@@ -223,6 +225,9 @@ When a task is completed, you MUST update this file in **TWO** locations:
 | packages/types/src/vocab.interfaces.ts | Created | IP-4 |
 | apps/api/src/modules/vocab/vocab.service.ts | Modified | IP-4 |
 | packages/types/src/index.ts | Modified | IP-4 |
+| packages/types/src/vocab.interfaces.ts | Modified | IP-4a |
+| apps/api/src/modules/vocab/vocab.service.ts | Modified | IP-4a |
+| apps/api/src/modules/vocab/vocab.service.ts | Modified | IP-4b |
 ---
 
 ## Architecture Decisions Log
@@ -443,3 +448,11 @@ Notes: Setup a 1-minute delayed job in schedulers.ts for 'enforce-ttl-policies' 
 Task IP-4: Vocab API Separate Interfaces — COMPLETED 2026-09-26T08:55:00Z
 Files: packages/types/src/vocab.interfaces.ts, apps/api/src/modules/vocab/vocab.service.ts, packages/types/src/index.ts
 Notes: Defined VocabProvider interface; DictionaryAPI primary, FreeDictionaryAPI fallback.
+
+Task IP-4a: Vocab API Unified Schema & Fallback Priority — COMPLETED 2026-09-26T09:30:00Z
+Files: packages/types/src/vocab.interfaces.ts, apps/api/src/modules/vocab/vocab.service.ts
+Notes: Refactored Vocab API to use a unified shared schema that accurately matches the payload. Updated NormalizedVocabEntry to include forms and complex examples. Re-prioritized FreeDictionaryAPI as the primary provider with separate helper adapters.
+
+Task IP-4b: Vocab API Schema Decoupling — COMPLETED 2026-09-26T09:41:00Z
+Files: apps/api/src/modules/vocab/vocab.service.ts
+Notes: Duplicated the unified Zod schema into two independent schemas (freeDictSchema and englishDictSchema) for each provider. This completely decouples the providers, ensuring that if one API changes its payload shape, it will not break the validation for the other.

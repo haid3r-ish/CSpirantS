@@ -1,29 +1,154 @@
 import type { VocabProvider, NormalizedVocabEntry } from '@repo/types';
 import { z } from 'zod';
 
+const freeDictSchema = z.object({
+  word: z.string(),
+  entries: z.array(
+    z.object({
+      partOfSpeech: z.string(),
+      forms: z.array(z.object({ word: z.string() }).passthrough()).optional(),
+      senses: z.array(
+        z.object({
+          definition: z.string(),
+          examples: z.array(z.string()).optional(),
+          quotes: z.array(z.object({ text: z.string() }).passthrough()).optional(),
+          synonyms: z.array(z.string()).optional(),
+          antonyms: z.array(z.string()).optional(),
+        }).passthrough()
+      ).optional(),
+      synonyms: z.array(z.string()).optional(),
+      antonyms: z.array(z.string()).optional(),
+    }).passthrough()
+  ).min(1),
+}).passthrough();
+
+type FreeDictPayload = z.infer<typeof freeDictSchema>;
+
 const englishDictSchema = z.object({
   word: z.string(),
-  forms: z.array(z.string()).optional(),
-  partsOfSpeech: z.array(z.object({
-    partOfSpeech: z.string(),
-    definitions: z.array(z.object({ definition: z.string(), example: z.string().optional() })).optional(),
-    senses: z.array(z.object({ definition: z.string(), example: z.string().optional() })).optional(),
-  })).optional(),
-  synonyms: z.array(z.string()).optional(),
-  antonyms: z.array(z.string()).optional(),
+  entries: z.array(
+    z.object({
+      partOfSpeech: z.string(),
+      forms: z.array(z.object({ word: z.string() }).passthrough()).optional(),
+      senses: z.array(
+        z.object({
+          definition: z.string(),
+          examples: z.array(z.string()).optional(),
+          quotes: z.array(z.object({ text: z.string() }).passthrough()).optional(),
+          synonyms: z.array(z.string()).optional(),
+          antonyms: z.array(z.string()).optional(),
+        }).passthrough()
+      ).optional(),
+      synonyms: z.array(z.string()).optional(),
+      antonyms: z.array(z.string()).optional(),
+    }).passthrough()
+  ).min(1),
 }).passthrough();
+
+type EnglishDictPayload = z.infer<typeof englishDictSchema>;
+
+export class FreeDictionaryApiProvider implements VocabProvider {
+  name = 'freedictionaryapi.com';
+
+  private adaptFreeDictionaryApi(raw: FreeDictPayload): NormalizedVocabEntry {
+    const allForms = new Set<string>();
+    const allSynonyms = new Set<string>();
+    const allAntonyms = new Set<string>();
+
+    const meanings = raw.entries.map((entry) => {
+      entry.forms?.forEach((f) => allForms.add(f.word));
+      entry.synonyms?.forEach((s) => allSynonyms.add(s));
+      entry.antonyms?.forEach((a) => allAntonyms.add(a));
+
+      const definitions = (entry.senses || []).map((sense) => {
+        sense.synonyms?.forEach((s) => allSynonyms.add(s));
+        sense.antonyms?.forEach((a) => allAntonyms.add(a));
+        
+        // Combine raw examples and quote text into the examples array
+        const examples = [...(sense.examples || [])];
+        if (sense.quotes) {
+           sense.quotes.forEach(q => examples.push(q.text));
+        }
+
+        return {
+          definition: sense.definition,
+          examples,
+        };
+      });
+
+      return {
+        partOfSpeech: entry.partOfSpeech,
+        definitions,
+      };
+    });
+
+    return {
+      word: raw.word,
+      forms: Array.from(allForms),
+      synonyms: Array.from(allSynonyms).slice(0, 10),
+      antonyms: Array.from(allAntonyms).slice(0, 10),
+      meanings,
+    };
+  }
+
+  async lookup(word: string): Promise<NormalizedVocabEntry | null> {
+    const res = await fetch(`https://freedictionaryapi.com/api/v1/entries/en/${encodeURIComponent(word)}`);
+    if (res.status === 429 || res.status >= 500) {
+      throw new Error(`rate-limit-or-server-error: ${res.status}`);
+    }
+    if (res.status === 404) {
+      return null;
+    }
+    if (!res.ok) {
+        throw new Error(`unexpected-error: ${res.status}`);
+    }
+    const rawData = await res.json();
+    const parsed = freeDictSchema.parse(rawData);
+    return this.adaptFreeDictionaryApi(parsed);
+  }
+}
 
 export class DictionaryApiProvider implements VocabProvider {
   name = 'englishdictionaryapi.com';
 
-  private adapt(raw: z.infer<typeof englishDictSchema>): NormalizedVocabEntry {
+  private adaptEnglishDictApi(raw: EnglishDictPayload): NormalizedVocabEntry {
+    const allForms = new Set<string>();
+    const allSynonyms = new Set<string>();
+    const allAntonyms = new Set<string>();
+
+    const meanings = raw.entries.map((entry) => {
+      entry.forms?.forEach((f) => allForms.add(f.word));
+      entry.synonyms?.forEach((s) => allSynonyms.add(s));
+      entry.antonyms?.forEach((a) => allAntonyms.add(a));
+
+      const definitions = (entry.senses || []).map((sense) => {
+        sense.synonyms?.forEach((s) => allSynonyms.add(s));
+        sense.antonyms?.forEach((a) => allAntonyms.add(a));
+        
+        // Combine raw examples and quote text into the examples array
+        const examples = [...(sense.examples || [])];
+        if (sense.quotes) {
+           sense.quotes.forEach(q => examples.push(q.text));
+        }
+
+        return {
+          definition: sense.definition,
+          examples,
+        };
+      });
+
+      return {
+        partOfSpeech: entry.partOfSpeech,
+        definitions,
+      };
+    });
+
     return {
       word: raw.word,
-      phonetic: undefined, // this API doesn't seem to provide a flat phonetic string by default
-      meanings: raw.partsOfSpeech?.map((pos) => ({
-        partOfSpeech: pos.partOfSpeech,
-        definitions: (pos.senses || pos.definitions || []).map((d) => d.definition),
-      })) ?? [],
+      forms: Array.from(allForms),
+      synonyms: Array.from(allSynonyms).slice(0, 10),
+      antonyms: Array.from(allAntonyms).slice(0, 10),
+      meanings,
     };
   }
 
@@ -40,62 +165,14 @@ export class DictionaryApiProvider implements VocabProvider {
     }
     const rawData = await res.json();
     const parsed = englishDictSchema.parse(rawData);
-    return this.adapt(parsed);
+    return this.adaptEnglishDictApi(parsed);
   }
 }
 
-const freeDictEntrySchema = z.object({
-  word: z.string(),
-  phonetics: z.array(z.object({ text: z.string().optional() })).optional(),
-  meanings: z.array(z.object({
-    partOfSpeech: z.string(),
-    definitions: z.array(z.object({
-      definition: z.string(),
-      example: z.string().optional(),
-      synonyms: z.array(z.string()).optional(),
-      antonyms: z.array(z.string()).optional(),
-    })),
-    synonyms: z.array(z.string()).optional(),
-    antonyms: z.array(z.string()).optional(),
-  })),
-});
-const freeDictResponseSchema = z.array(freeDictEntrySchema).min(1);
-
-export class FreeDictionaryApiProvider implements VocabProvider {
-  name = 'api.dictionaryapi.dev';
-
-  private adapt(raw: z.infer<typeof freeDictResponseSchema>): NormalizedVocabEntry {
-    const entry = raw[0];
-    return {
-      word: entry.word,
-      phonetic: entry.phonetics?.find(p => p.text)?.text,
-      meanings: entry.meanings.map(m => ({
-        partOfSpeech: m.partOfSpeech,
-        definitions: m.definitions.map(d => d.definition)
-      })),
-    };
-  }
-
-  async lookup(word: string): Promise<NormalizedVocabEntry | null> {
-    const res = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${encodeURIComponent(word)}`);
-    if (res.status === 429 || res.status >= 500) {
-      throw new Error(`rate-limit-or-server-error: ${res.status}`);
-    }
-    if (res.status === 404) {
-      return null;
-    }
-    if (!res.ok) {
-        throw new Error(`unexpected-error: ${res.status}`);
-    }
-    const rawData = await res.json();
-    const parsed = freeDictResponseSchema.parse(rawData);
-    return this.adapt(parsed);
-  }
-}
-
+// NOTE: Priority is FreeDictionaryAPI, fallback is EnglishDictionaryAPI
 const PROVIDERS: VocabProvider[] = [
-  new DictionaryApiProvider(),
   new FreeDictionaryApiProvider(),
+  new DictionaryApiProvider(),
 ];
 
 export async function lookupWord(word: string): Promise<NormalizedVocabEntry | null> {
