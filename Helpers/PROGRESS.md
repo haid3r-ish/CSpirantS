@@ -87,6 +87,7 @@ When a task is completed, you MUST update this file in **TWO** locations:
 | IP-5 | DB Cleanup + LlmBatch Status Filter | 2026-09-26 | apps/api/src/pipeline/workers/maintenance.worker.ts, apps/api/src/modules/pipeline/llm-batch.routes.ts, apps/api/src/modules/pipeline/llm-batch.service.ts |
 | IP-6 | LLM Batch Route Path Correction + getBatchById | 2026-09-26 | apps/api/src/modules/pipeline/llm-batch.routes.ts, apps/api/src/modules/pipeline/llm-batch.service.ts |
 | 9-1 | Prisma Schema — Dedupe Fields | 2026-09-26 | packages/db/prisma/schema.prisma |
+| 4-5a | Config — Add Slot & Dedupe Env Vars | 2026-09-26 | apps/api/src/core/config.ts |
 
 ---
 
@@ -121,6 +122,7 @@ When a task is completed, you MUST update this file in **TWO** locations:
 | IP-5 | DB Cleanup + LlmBatch Status Filter | `feat(task-IP-5): db cleanup and llmbatch status filter` | ✅ Pushed |
 | IP-6 | LLM Batch Route Path Correction + getBatchById | `feat(task-IP-6): LLM Batch Route Path Correction and getBatchById` | ✅ Pushed |
 | 9-1 | Prisma Schema — Dedupe Fields | `feat(task-9-1): Prisma Schema Dedupe Fields` | ✅ Pushed |
+| 4-5a | Config — Add Slot & Dedupe Env Vars | `feat(task-4-5a): Config Slot and Dedupe Env Vars` | ✅ Pushed |
 
 ---
 
@@ -242,6 +244,7 @@ When a task is completed, you MUST update this file in **TWO** locations:
 | apps/api/src/modules/pipeline/llm-batch.routes.ts | Modified | IP-6 |
 | apps/api/src/modules/pipeline/llm-batch.service.ts | Modified | IP-6 |
 | packages/db/prisma/schema.prisma | Modified | 9-1 |
+| apps/api/src/core/config.ts | Modified | 4-5a |
 ---
 
 ## Architecture Decisions Log
@@ -482,3 +485,7 @@ Notes: Renamed routes to /llm-batches; added getBatchById endpoint.
 Task 9-1: Prisma Schema — Dedupe Fields — COMPLETED 2026-09-26T17:35:00Z
 Files: packages/db/prisma/schema.prisma
 Notes: Added mergedIntoId (self-FK), alsoCoveredBy (String[]), and indexes for Cross-Source Deduplication. Could not execute db:migrate because DB was down, but db:generate compiled cleanly.
+
+Task 4-5a: Config Slot & Dedupe Env Vars — COMPLETED 2026-09-26T17:53:00Z
+Files: apps/api/src/core/config.ts
+Notes: Added 7 new pipeline scheduling and dedupe config keys.
