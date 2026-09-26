@@ -2,11 +2,15 @@ import { prisma } from '@repo/db';
 import { extractQueue } from '../../queue/queues.js';
 import { NotFoundError, BadRequestError, ConflictError } from '../../core/errors.js';
 
-export async function getPendingBatches(page = 1, limit = 10) {
+import { LlmBatchStatus } from '@repo/db';
+
+export async function getPendingBatches(page = 1, limit = 10, status?: LlmBatchStatus) {
   const skip = (page - 1) * limit;
+  const whereClause = status ? { status } : {};
+
   const [batches, total] = await Promise.all([
     prisma.llmBatch.findMany({
-      where: { status: 'AWAITING_MANUAL' },
+      where: whereClause,
       skip,
       take: limit,
       orderBy: { createdAt: 'desc' },
@@ -16,7 +20,7 @@ export async function getPendingBatches(page = 1, limit = 10) {
         }
       }
     }),
-    prisma.llmBatch.count({ where: { status: 'AWAITING_MANUAL' } }),
+    prisma.llmBatch.count({ where: whereClause }),
   ]);
 
   return {

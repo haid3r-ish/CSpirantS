@@ -84,6 +84,7 @@ When a task is completed, you MUST update this file in **TWO** locations:
 | IP-4 | Vocab API Separate Interfaces | 2026-09-26 | packages/types/src/vocab.interfaces.ts, apps/api/src/modules/vocab/vocab.service.ts, packages/types/src/index.ts |
 | IP-4a | Vocab API Unified Schema & Fallback Priority | 2026-09-26 | packages/types/src/vocab.interfaces.ts, apps/api/src/modules/vocab/vocab.service.ts |
 | IP-4b | Vocab API Schema Decoupling | 2026-09-26 | apps/api/src/modules/vocab/vocab.service.ts |
+| IP-5 | DB Cleanup + LlmBatch Status Filter | 2026-09-26 | apps/api/src/pipeline/workers/maintenance.worker.ts, apps/api/src/modules/pipeline/llm-batch.routes.ts, apps/api/src/modules/pipeline/llm-batch.service.ts |
 
 ---
 
@@ -228,6 +229,9 @@ When a task is completed, you MUST update this file in **TWO** locations:
 | packages/types/src/vocab.interfaces.ts | Modified | IP-4a |
 | apps/api/src/modules/vocab/vocab.service.ts | Modified | IP-4a |
 | apps/api/src/modules/vocab/vocab.service.ts | Modified | IP-4b |
+| apps/api/src/pipeline/workers/maintenance.worker.ts | Modified | IP-5 |
+| apps/api/src/modules/pipeline/llm-batch.routes.ts | Modified | IP-5 |
+| apps/api/src/modules/pipeline/llm-batch.service.ts | Modified | IP-5 |
 ---
 
 ## Architecture Decisions Log
@@ -456,3 +460,7 @@ Notes: Refactored Vocab API to use a unified shared schema that accurately match
 Task IP-4b: Vocab API Schema Decoupling — COMPLETED 2026-09-26T09:41:00Z
 Files: apps/api/src/modules/vocab/vocab.service.ts
 Notes: Duplicated the unified Zod schema into two independent schemas (freeDictSchema and englishDictSchema) for each provider. This completely decouples the providers, ensuring that if one API changes its payload shape, it will not break the validation for the other.
+
+Task IP-5: DB Cleanup + LlmBatch Status Filter — COMPLETED 2026-09-26T17:21:00Z
+Files: apps/api/src/pipeline/workers/maintenance.worker.ts, apps/api/src/modules/pipeline/llm-batch.routes.ts, apps/api/src/modules/pipeline/llm-batch.service.ts
+Notes: Added raw Prisma SQL TTL for PipelineRun and LlmBatch to delete records older than 7 days; GET batch route updated to accept optional Zod status filter.

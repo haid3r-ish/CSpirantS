@@ -8,10 +8,11 @@ export async function llmBatchRoutes(server: FastifyInstance) {
     const querySchema = z.object({
       page: z.coerce.number().min(1).default(1),
       limit: z.coerce.number().min(1).max(100).default(10),
+      status: z.enum(['PENDING','SENT','AWAITING_MANUAL','COMPLETED','FAILED']).optional(),
     });
 
     const query = querySchema.parse(request.query);
-    const batches = await llmBatchService.getPendingBatches(query.page, query.limit);
+    const batches = await llmBatchService.getPendingBatches(query.page, query.limit, query.status as any);
     return reply.send(batches);
   });
 
