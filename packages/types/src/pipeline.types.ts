@@ -27,6 +27,7 @@ export interface PipelineRunStats {
   discovered: number;
   approved: number;
   rejected: number;
+  deduplicated?: number;
   extracted: number;
   failed: number;
 }

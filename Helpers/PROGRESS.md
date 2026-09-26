@@ -92,6 +92,7 @@ When a task is completed, you MUST update this file in **TWO** locations:
 | 4-5b | Redis Pool State Helpers | 2026-09-26 | apps/api/src/queue/pool-state.ts |
 | 4-5c | Slot Lock — Redis NX Lock | 2026-09-26 | apps/api/src/queue/slot-lock.ts |
 | 9-2 | LLM Prompt — Add Dedup Response to Evaluate | 2026-09-26 | packages/types, packages/llm-core |
+| 9-3 | Evaluate Stage — Process LLM Dedup Groups | 2026-09-26 | apps/api/src/pipeline/stage-evaluate.ts |
 
 ---
 
@@ -131,6 +132,7 @@ When a task is completed, you MUST update this file in **TWO** locations:
 | 4-5b | Redis Pool State Helpers | `feat(task-4-5b): Redis Pool State Helpers` | ✅ Pushed |
 | 4-5c | Slot Lock — Redis NX Lock | `feat(task-4-5c): Slot Lock Redis NX Lock` | ✅ Pushed |
 | 9-2 | LLM Prompt — Add Dedup Response to Evaluate | `feat(task-9-2): LLM Prompt Add Dedup Response to Evaluate` | ✅ Pushed |
+| 9-3 | Evaluate Stage — Process LLM Dedup Groups | `feat(task-9-3): Evaluate Stage Process LLM Dedup Groups` | ✅ Pushed |
 
 ---
 
@@ -260,6 +262,8 @@ When a task is completed, you MUST update this file in **TWO** locations:
 | packages/llm-core/src/prompts/css-pms-filter.ts | Modified | 9-2 |
 | packages/llm-core/src/formatter/pipe-delimited.ts | Modified | 9-2 |
 | packages/llm-core/src/providers/base.provider.ts | Modified | 9-2 |
+| apps/api/src/pipeline/stage-evaluate.ts | Modified | 9-3 |
+| packages/types/src/pipeline.types.ts | Modified | 9-3 |
 ---
 
 ## Architecture Decisions Log
@@ -520,3 +524,7 @@ Notes: Redis NX slot lock with 30-min auto-expiry. Prevents concurrent pipeline 
 Task 9-2: LLM Prompt — Add Dedup Response to Evaluate — COMPLETED 2026-09-26T21:16:00Z
 Files: packages/types/src/dedup.types.ts, packages/types/src/llm.types.ts, packages/llm-core/src/prompts/css-pms-filter.ts, packages/llm-core/src/formatter/pipe-delimited.ts, packages/llm-core/src/providers/base.provider.ts
 Notes: LLM returns two-line CSV: line 1 = approved hashes, line 2 = pipe-separated duplicate groups (canonical:dup1,dup2). sourceGroup field added to input. String-split parser — no JSON overhead.
+
+Task 9-3: Evaluate Stage — Process LLM Dedup Groups — COMPLETED 2026-09-26T21:32:00Z
+Files: apps/api/src/pipeline/stage-evaluate.ts, packages/types/src/pipeline.types.ts
+Notes: stage-evaluate now processes duplicateGroups from LLM response. Marks DEDUPLICATED with canonicalArticleId and stores CoveredByEntry[] on canonical alsoCoveredBy. Group boundary guard prevents cross-group dedup. DEDUPE_ENABLED config guard.
