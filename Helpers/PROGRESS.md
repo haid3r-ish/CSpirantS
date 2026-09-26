@@ -90,6 +90,7 @@ When a task is completed, you MUST update this file in **TWO** locations:
 | 9-1a | Prisma Schema — Dedupe Fields (Correction) | 2026-09-26 | packages/db/prisma/schema.prisma |
 | 4-5a | Config — Add Slot & Dedupe Env Vars | 2026-09-26 | apps/api/src/core/config.ts |
 | 4-5b | Redis Pool State Helpers | 2026-09-26 | apps/api/src/queue/pool-state.ts |
+| 4-5c | Slot Lock — Redis NX Lock | 2026-09-26 | apps/api/src/queue/slot-lock.ts |
 
 ---
 
@@ -127,6 +128,7 @@ When a task is completed, you MUST update this file in **TWO** locations:
 | 9-1a | Prisma Schema — Dedupe Fields Correction | `feat(task-9-1a): Prisma Schema Dedupe Fields Correction` | ✅ Pushed |
 | 4-5a | Config — Add Slot & Dedupe Env Vars | `feat(task-4-5a): Config Add Slot and Dedupe Env Vars` | ✅ Pushed |
 | 4-5b | Redis Pool State Helpers | `feat(task-4-5b): Redis Pool State Helpers` | ✅ Pushed |
+| 4-5c | Slot Lock — Redis NX Lock | `feat(task-4-5c): Slot Lock Redis NX Lock` | ✅ Pushed |
 
 ---
 
@@ -250,6 +252,7 @@ When a task is completed, you MUST update this file in **TWO** locations:
 | packages/db/prisma/schema.prisma | Modified | 9-1, 9-1a |
 | apps/api/src/core/config.ts | Modified | 4-5a |
 | apps/api/src/queue/pool-state.ts | Created | 4-5b |
+| apps/api/src/queue/slot-lock.ts | Created | 4-5c |
 ---
 
 ## Architecture Decisions Log
@@ -502,3 +505,7 @@ Notes: Added 8 pipeline scheduling and dedupe config keys with safe defaults inc
 Task 4-5b: Redis Pool State Helpers — COMPLETED 2026-09-26T21:05:00Z
 Files: apps/api/src/queue/pool-state.ts
 Notes: Atomic pool drain via Lua + day-scoped threshold key management.
+
+Task 4-5c: Slot Lock — COMPLETED 2026-09-26T21:09:00Z
+Files: apps/api/src/queue/slot-lock.ts
+Notes: Redis NX slot lock with 30-min auto-expiry. Prevents concurrent pipeline runs.
