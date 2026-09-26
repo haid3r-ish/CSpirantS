@@ -91,6 +91,7 @@ When a task is completed, you MUST update this file in **TWO** locations:
 | 4-5a | Config — Add Slot & Dedupe Env Vars | 2026-09-26 | apps/api/src/core/config.ts |
 | 4-5b | Redis Pool State Helpers | 2026-09-26 | apps/api/src/queue/pool-state.ts |
 | 4-5c | Slot Lock — Redis NX Lock | 2026-09-26 | apps/api/src/queue/slot-lock.ts |
+| 9-2 | LLM Prompt — Add Dedup Response to Evaluate | 2026-09-26 | packages/types, packages/llm-core |
 
 ---
 
@@ -129,6 +130,7 @@ When a task is completed, you MUST update this file in **TWO** locations:
 | 4-5a | Config — Add Slot & Dedupe Env Vars | `feat(task-4-5a): Config Add Slot and Dedupe Env Vars` | ✅ Pushed |
 | 4-5b | Redis Pool State Helpers | `feat(task-4-5b): Redis Pool State Helpers` | ✅ Pushed |
 | 4-5c | Slot Lock — Redis NX Lock | `feat(task-4-5c): Slot Lock Redis NX Lock` | ✅ Pushed |
+| 9-2 | LLM Prompt — Add Dedup Response to Evaluate | `feat(task-9-2): LLM Prompt Add Dedup Response to Evaluate` | ✅ Pushed |
 
 ---
 
@@ -253,6 +255,11 @@ When a task is completed, you MUST update this file in **TWO** locations:
 | apps/api/src/core/config.ts | Modified | 4-5a |
 | apps/api/src/queue/pool-state.ts | Created | 4-5b |
 | apps/api/src/queue/slot-lock.ts | Created | 4-5c |
+| packages/types/src/dedup.types.ts | Created | 9-2 |
+| packages/types/src/llm.types.ts | Modified | 9-2 |
+| packages/llm-core/src/prompts/css-pms-filter.ts | Modified | 9-2 |
+| packages/llm-core/src/formatter/pipe-delimited.ts | Modified | 9-2 |
+| packages/llm-core/src/providers/base.provider.ts | Modified | 9-2 |
 ---
 
 ## Architecture Decisions Log
@@ -509,3 +516,7 @@ Notes: Atomic pool drain via Lua + day-scoped threshold key management.
 Task 4-5c: Slot Lock — COMPLETED 2026-09-26T21:09:00Z
 Files: apps/api/src/queue/slot-lock.ts
 Notes: Redis NX slot lock with 30-min auto-expiry. Prevents concurrent pipeline runs.
+
+Task 9-2: LLM Prompt — Add Dedup Response to Evaluate — COMPLETED 2026-09-26T21:16:00Z
+Files: packages/types/src/dedup.types.ts, packages/types/src/llm.types.ts, packages/llm-core/src/prompts/css-pms-filter.ts, packages/llm-core/src/formatter/pipe-delimited.ts, packages/llm-core/src/providers/base.provider.ts
+Notes: LLM returns two-line CSV: line 1 = approved hashes, line 2 = pipe-separated duplicate groups (canonical:dup1,dup2). sourceGroup field added to input. String-split parser — no JSON overhead.

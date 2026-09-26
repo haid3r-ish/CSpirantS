@@ -1,3 +1,5 @@
+import { LlmDuplicateGroup } from './dedup.types.js';
+
 export type LlmMode = 'api' | 'manual';
 export type LlmProviderType = 'gemini' | 'grok';
 
@@ -13,6 +15,7 @@ export interface LlmEvaluationItem {
   hash: string;
   title: string;
   description?: string;
+  publishedAt?: string;
 }
 
 export interface LlmTokenUsage {
@@ -25,6 +28,7 @@ export interface LlmEvaluationResult {
   mode: LlmMode;
   approvedHashes: string[];
   rejectedHashes: string[];
+  duplicateGroups?: LlmDuplicateGroup[];
   rawResponse?: string;
   promptCsv?: string; // Set when mode='manual', contains the full prompt to copy-paste
   tokenUsage?: LlmTokenUsage;
