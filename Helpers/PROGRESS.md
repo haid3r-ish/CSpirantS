@@ -85,6 +85,7 @@ When a task is completed, you MUST update this file in **TWO** locations:
 | IP-4a | Vocab API Unified Schema & Fallback Priority | 2026-09-26 | packages/types/src/vocab.interfaces.ts, apps/api/src/modules/vocab/vocab.service.ts |
 | IP-4b | Vocab API Schema Decoupling | 2026-09-26 | apps/api/src/modules/vocab/vocab.service.ts |
 | IP-5 | DB Cleanup + LlmBatch Status Filter | 2026-09-26 | apps/api/src/pipeline/workers/maintenance.worker.ts, apps/api/src/modules/pipeline/llm-batch.routes.ts, apps/api/src/modules/pipeline/llm-batch.service.ts |
+| IP-6 | LLM Batch Route Path Correction + getBatchById | 2026-09-26 | apps/api/src/modules/pipeline/llm-batch.routes.ts, apps/api/src/modules/pipeline/llm-batch.service.ts |
 
 ---
 
@@ -92,7 +93,7 @@ When a task is completed, you MUST update this file in **TWO** locations:
 
 > Remote Repository: [haid3r-ish/CSpirantS](https://github.com/haid3r-ish/CSpirantS)  
 > Target Branch: `main`  
-> Last Pushed: 2026-09-23  
+> Last Pushed: 2026-09-26  
 
 | Task ID | Task Name | Commit Message | Push Status |
 |---------|-----------|----------------|-------------|
@@ -114,6 +115,10 @@ When a task is completed, you MUST update this file in **TWO** locations:
 | 2-3c | Dawn Parser Date Guard | `feat(task-2-3c): Dawn Parser Date Guard` | ✅ Pushed |
 | 2-4 | HybridFetchEngine with Playwright Stealth | `feat(task-2-4): HybridFetchEngine with Playwright Stealth` | ✅ Pushed |
 | 4-4a | Fix: TTL Cleanup Schedule & Init | `fix(task-4-4a): Run TTL cleanup after 1min & call setupSchedulers` | ✅ Pushed |
+| IP-4 | Vocab API Separate Interfaces | `feat(task-IP-4): Vocab API Separate Interfaces` | ✅ Pushed |
+| IP-4b | Vocab API Schema Decoupling | `refactor(task-IP-4b): decouple vocab api schemas and remove phonetics` | ✅ Pushed |
+| IP-5 | DB Cleanup + LlmBatch Status Filter | `feat(task-IP-5): db cleanup and llmbatch status filter` | ✅ Pushed |
+| IP-6 | LLM Batch Route Path Correction + getBatchById | `feat(task-IP-6): LLM Batch Route Path Correction and getBatchById` | ✅ Pushed |
 
 ---
 
@@ -232,6 +237,8 @@ When a task is completed, you MUST update this file in **TWO** locations:
 | apps/api/src/pipeline/workers/maintenance.worker.ts | Modified | IP-5 |
 | apps/api/src/modules/pipeline/llm-batch.routes.ts | Modified | IP-5 |
 | apps/api/src/modules/pipeline/llm-batch.service.ts | Modified | IP-5 |
+| apps/api/src/modules/pipeline/llm-batch.routes.ts | Modified | IP-6 |
+| apps/api/src/modules/pipeline/llm-batch.service.ts | Modified | IP-6 |
 ---
 
 ## Architecture Decisions Log
@@ -464,3 +471,7 @@ Notes: Duplicated the unified Zod schema into two independent schemas (freeDictS
 Task IP-5: DB Cleanup + LlmBatch Status Filter — COMPLETED 2026-09-26T17:21:00Z
 Files: apps/api/src/pipeline/workers/maintenance.worker.ts, apps/api/src/modules/pipeline/llm-batch.routes.ts, apps/api/src/modules/pipeline/llm-batch.service.ts
 Notes: Added raw Prisma SQL TTL for PipelineRun and LlmBatch to delete records older than 7 days; GET batch route updated to accept optional Zod status filter.
+
+Task IP-6: LLM Batch Route Path Correction + getBatchById — COMPLETED 2026-09-26T17:30:00Z
+Files: apps/api/src/modules/pipeline/llm-batch.routes.ts, apps/api/src/modules/pipeline/llm-batch.service.ts
+Notes: Renamed routes to /llm-batches; added getBatchById endpoint.

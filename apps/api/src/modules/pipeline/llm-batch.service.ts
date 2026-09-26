@@ -31,6 +31,15 @@ export async function getPendingBatches(page = 1, limit = 10, status?: LlmBatchS
   };
 }
 
+export async function getBatchById(id: string) {
+  const batch = await prisma.llmBatch.findUnique({
+    where: { id },
+    include: { pipelineRun: true }
+  });
+  if (!batch) throw new NotFoundError('Batch not found');
+  return batch;
+}
+
 export async function getBatchPrompt(id: string) {
   const batch = await prisma.llmBatch.findUnique({
     where: { id },

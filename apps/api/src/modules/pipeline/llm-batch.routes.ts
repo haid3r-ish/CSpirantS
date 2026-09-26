@@ -4,7 +4,7 @@ import { requireAuth } from '../auth/auth.middleware.js';
 import * as llmBatchService from './llm-batch.service.js';
 
 export async function llmBatchRoutes(server: FastifyInstance) {
-  server.get('/api/pipeline/batches', { preHandler: [requireAuth] }, async (request, reply) => {
+  server.get('/api/pipeline/llm-batches', { preHandler: [requireAuth] }, async (request, reply) => {
     const querySchema = z.object({
       page: z.coerce.number().min(1).default(1),
       limit: z.coerce.number().min(1).max(100).default(10),
@@ -16,7 +16,14 @@ export async function llmBatchRoutes(server: FastifyInstance) {
     return reply.send(batches);
   });
 
-  server.get('/api/pipeline/batches/:id/prompt', { preHandler: [requireAuth] }, async (request, reply) => {
+  server.get('/api/pipeline/llm-batches/:id', { preHandler: [requireAuth] }, async (request, reply) => {
+    const paramsSchema = z.object({ id: z.string().min(1) });
+    const params = paramsSchema.parse(request.params);
+    const batch = await llmBatchService.getBatchById(params.id);
+    return reply.send(batch);
+  });
+
+  server.get('/api/pipeline/llm-batches/:id/prompt', { preHandler: [requireAuth] }, async (request, reply) => {
     const paramsSchema = z.object({ id: z.string().min(1) });
 
     const params = paramsSchema.parse(request.params);
@@ -24,7 +31,7 @@ export async function llmBatchRoutes(server: FastifyInstance) {
     return reply.send(promptData);
   });
 
-  server.post('/api/pipeline/batches/:id/resolve', { preHandler: [requireAuth] }, async (request, reply) => {
+  server.post('/api/pipeline/llm-batches/:id/resolve', { preHandler: [requireAuth] }, async (request, reply) => {
     const paramsSchema = z.object({ id: z.string().min(1) });
     const bodySchema = z.object({
       approvedHashes: z.array(z.string().regex(/^[a-f0-9]{16}$/i)),
