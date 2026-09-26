@@ -15,13 +15,18 @@ const configSchema = z.object({
   LLM_MODEL: z.string().optional().default('gemini-3.6-flash'),
   LLM_MODE: z.enum(['api', 'manual']).default('api'),
   FRONTEND_URL: z.string().url(),
-  PROCESS_THRESHOLD_START: z.coerce.number().default(20),
+  
+  // Pipeline Scheduling & Pool Limits
+  PROCESS_THRESHOLD_START:     z.coerce.number().default(20),
   PROCESS_THRESHOLD_REDUCTION: z.coerce.number().default(5),
-  PROCESS_THRESHOLD_FLOOR: z.coerce.number().default(5),
-  FORCE_PROCESS_HOUR: z.coerce.number().default(0),
-  DEDUPE_ENABLED: z.coerce.boolean().default(true),
-  DEDUPE_BATCH_SIZE: z.coerce.number().default(30),
-  DEDUPE_WINDOW_HOURS: z.coerce.number().default(24),
+  PROCESS_THRESHOLD_FLOOR:     z.coerce.number().default(5),
+  FORCE_PROCESS_HOUR:          z.coerce.number().default(0),
+  
+  // Deduplication
+  DEDUPE_ENABLED:              z.coerce.boolean().default(true),
+  DEDUPE_BATCH_SIZE:           z.coerce.number().default(30),
+  DEDUPE_WINDOW_HOURS:         z.coerce.number().default(24),
+  DEDUPE_SIMILARITY_THRESHOLD: z.coerce.number().min(0).max(1).default(0.65), // Kept for future use
 });
 
 const parsed = configSchema.safeParse(process.env);

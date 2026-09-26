@@ -88,6 +88,7 @@ When a task is completed, you MUST update this file in **TWO** locations:
 | IP-6 | LLM Batch Route Path Correction + getBatchById | 2026-09-26 | apps/api/src/modules/pipeline/llm-batch.routes.ts, apps/api/src/modules/pipeline/llm-batch.service.ts |
 | 9-1 | Prisma Schema — Dedupe Fields | 2026-09-26 | packages/db/prisma/schema.prisma |
 | 9-1a | Prisma Schema — Dedupe Fields (Correction) | 2026-09-26 | packages/db/prisma/schema.prisma |
+| 4-5a | Config — Add Slot & Dedupe Env Vars | 2026-09-26 | apps/api/src/core/config.ts |
 
 ---
 
@@ -123,6 +124,7 @@ When a task is completed, you MUST update this file in **TWO** locations:
 | IP-6 | LLM Batch Route Path Correction + getBatchById | `feat(task-IP-6): LLM Batch Route Path Correction and getBatchById` | ✅ Pushed |
 | 9-1 | Prisma Schema — Dedupe Fields | `feat(task-9-1): Prisma Schema Dedupe Fields` | ✅ Pushed |
 | 9-1a | Prisma Schema — Dedupe Fields Correction | `feat(task-9-1a): Prisma Schema Dedupe Fields Correction` | ✅ Pushed |
+| 4-5a | Config — Add Slot & Dedupe Env Vars | `feat(task-4-5a): Config Add Slot and Dedupe Env Vars` | ✅ Pushed |
 
 ---
 
@@ -244,6 +246,7 @@ When a task is completed, you MUST update this file in **TWO** locations:
 | apps/api/src/modules/pipeline/llm-batch.routes.ts | Modified | IP-6 |
 | apps/api/src/modules/pipeline/llm-batch.service.ts | Modified | IP-6 |
 | packages/db/prisma/schema.prisma | Modified | 9-1, 9-1a |
+| apps/api/src/core/config.ts | Modified | 4-5a |
 ---
 
 ## Architecture Decisions Log
@@ -488,3 +491,7 @@ Notes: Added mergedIntoId (self-FK), alsoCoveredBy (String[]), and indexes for C
 Task 9-1a: Prisma Schema — Dedupe Fields Correction — COMPLETED 2026-09-26T18:45:00Z
 Files: packages/db/prisma/schema.prisma
 Notes: Removed mergedIntoId/mergedFrom (wrong self-FK). Added DEDUPLICATED status. Changed alsoCoveredBy to Json?. Added canonicalArticleId String?. Added dedupeGroup/dedupePriority to ScraperSource.
+
+Task 4-5a: Config Slot & Dedupe Env Vars — COMPLETED 2026-09-26T21:05:00Z
+Files: apps/api/src/core/config.ts
+Notes: Added 8 pipeline scheduling and dedupe config keys with safe defaults including DEDUPE_SIMILARITY_THRESHOLD.
