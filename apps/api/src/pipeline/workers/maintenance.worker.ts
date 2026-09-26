@@ -1,7 +1,6 @@
 import { Worker, Job } from 'bullmq';
 import { redisConnection } from '../../queue/connection.js';
 import { prisma } from '@repo/db';
-import { triggerPipeline } from '../orchestrator.js';
 
 export const maintenanceWorker = new Worker(
   'maintenance',
@@ -51,43 +50,10 @@ export const maintenanceWorker = new Worker(
       }
     }
 
-    if (job.name === 'trigger-daily-pipeline') {
-      try {
-        const activeSources = await prisma.scraperSource.findMany({
-          where: { isActive: true },
-          select: { id: true },
-        });
-
-        if (activeSources.length === 0) {
-          console.log('[MaintenanceWorker] No active sources found for daily pipeline.');
-          return { pipelineRunId: null };
-        }
-
-        const sourceIds = activeSources.map((s) => s.id);
-
-        const pipelineRun = await prisma.pipelineRun.create({
-          data: {
-            status: 'RUNNING',
-            currentStage: 'DISCOVER',
-            sourceIds,
-            stats: {
-              discovered: 0,
-              approved: 0,
-              rejected: 0,
-              extracted: 0,
-              failed: 0,
-            },
-          },
-        });
-
-        await triggerPipeline(sourceIds, pipelineRun.id);
-        console.log(`[MaintenanceWorker] Triggered daily pipeline run: ${pipelineRun.id}`);
-
-        return { pipelineRunId: pipelineRun.id };
-      } catch (error: unknown) {
-        console.error(`[MaintenanceWorker] Failed to trigger daily pipeline:`, error);
-        throw error;
-      }
+    if (job.name === 'run-pipeline-slot') {
+      const { runSlot } = await import('../slot-scheduler.js');
+      await runSlot(job.data.hour as number);
+      return { slotHour: job.data.hour };
     }
 
     console.warn(`[MaintenanceWorker] Unknown job name: ${job.name}`);
