@@ -98,6 +98,7 @@ When a task is completed, you MUST update this file in **TWO** locations:
 | 9-4 | Articles API — Canonical Content Serving | 2026-09-27 | apps/api/src/modules/articles/articles.service.ts, apps/api/src/modules/scraper/source.routes.ts |
 | 9-5 | Sources API — Flexible Query Filtering & Enums | 2026-09-27 | apps/api/src/modules/scraper/source.routes.ts, apps/api/src/modules/scraper/source.service.ts |
 | 9-6 | Pipeline Stats — Update discovered count on stage complete | 2026-09-27 | apps/api/src/pipeline/stage-discover.ts |
+| 9-7 | Refactor publishedAt to Discover Stage & Improve LLM Prompt | 2026-09-27 | apps/api/src/pipeline/stage-*.ts, packages/scraper-core/src/parsers/*.ts, packages/llm-core/src/prompts/css-pms-filter.ts |
 
 ---
 
@@ -143,6 +144,7 @@ When a task is completed, you MUST update this file in **TWO** locations:
 | 9-4 | Articles API — Canonical Content Serving | `feat(task-9-4): Articles API Canonical Content Serving` | ✅ Pushed |
 | 9-5 | Sources API — Flexible Query Filtering & Enums | `feat(task-9-5): Sources API Query Filters and Enums` | ✅ Pushed |
 | 9-6 | Pipeline Stats — Update discovered count on stage complete | `fix(task-9-6): Pipeline Stats Discover Update` | ✅ Pushed |
+| 9-7 | Refactor publishedAt to Discover Stage & Improve LLM Prompt | `refactor(task-9-7): Move publishedAt to discover stage and overhaul LLM prompt` | ✅ Pushed |
 
 ---
 
@@ -563,3 +565,7 @@ Notes: Refactored source retrieval to accept dynamic query filters (isActive, de
 Task 9-6: Pipeline Stats — Update discovered count on stage complete — COMPLETED 2026-09-27T12:05:00Z
 Files: apps/api/src/pipeline/stage-discover.ts
 Notes: Fixed issue where pipelineRun stats were not updated with the discovered count after the discover stage completed. Added discoveredAt timestamp to article creation.
+
+Task 9-7: Refactor publishedAt to Discover Stage & Improve LLM Prompt — COMPLETED 2026-09-27T12:55:00Z
+Files: apps/api/src/pipeline/stage-discover.ts, apps/api/src/pipeline/stage-extract.ts, apps/api/src/pipeline/stage-evaluate.ts, packages/scraper-core/src/parsers/dawn.parser.ts, packages/scraper-core/src/parsers/base.parser.ts, packages/llm-core/src/prompts/css-pms-filter.ts
+Notes: Moved publishedAt extraction from the deep extract stage to the initial discover stage. Stored the timestamp inside the existing extractedData JSON field to avoid Prisma schema migrations. Overhauled the LLM prompt to include precise rules, explicit categories, and strict dual-line output formatting.

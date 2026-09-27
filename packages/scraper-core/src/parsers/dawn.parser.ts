@@ -18,10 +18,10 @@ class DawnParser extends BaseSiteParser {
     const today = new Date().toISOString().split('T')[0];
     return [
       `https://www.dawn.com/pakistan/${today}`,
-      `https://www.dawn.com/world/${today}`,
-      `https://www.dawn.com/newspaper/editorial/${today}`,
-      `https://www.dawn.com/newspaper/opinion/${today}`,
-      `https://www.dawn.com/newspaper/analysis-comment/${today}`,
+      // `https://www.dawn.com/world/${today}`,
+      // `https://www.dawn.com/newspaper/editorial/${today}`,
+      // `https://www.dawn.com/newspaper/opinion/${today}`,
+      // `https://www.dawn.com/newspaper/analysis-comment/${today}`,
     ];
   }
 
@@ -29,7 +29,7 @@ class DawnParser extends BaseSiteParser {
     if (targetDate) {
       this.verifyPageDate(html, targetDate);
     }
-    
+
     const $ = cheerio.load(html);
     const skipDescription = baseUrl.includes('/pakistan') || baseUrl.includes('/world');
     const seen = new Set<string>();
@@ -78,11 +78,20 @@ class DawnParser extends BaseSiteParser {
 
       const section = $card.find('span[id]').first().attr('id') || this._inferCategory(baseUrl);
 
+      let publishedAt =
+        $card.find('[datetime]').first().attr('datetime') ||
+        $card.find('.timestamp--time, .timeago, time.story__time, .story__time, .timestamp').first().attr('datetime') ||
+        $card.find('[data-updated], .timestamp--updated').first().attr('datetime') ||
+        $card.find('meta[property="article:modified_time"]').attr('content') ||
+        $card.find('[title]').first().attr('title') ||
+        '';
+
       results.push({
         url: href,
         title,
         description: description || undefined,
         category: section || 'general',
+        publishedAt: publishedAt || undefined,
       });
     });
 
@@ -95,7 +104,6 @@ class DawnParser extends BaseSiteParser {
 
     let title = '';
     let author = '';
-    let publishedAt = '';
     let imageUrl = '';
 
     if (jsonLd) {
@@ -115,7 +123,6 @@ class DawnParser extends BaseSiteParser {
           author = authorArr[0]?.name || '';
         }
       }
-      publishedAt = (getJsonLdField(jsonLd, 'datePublished') as string) || '';
       const img = getJsonLdField(jsonLd, 'image');
       if (typeof img === 'string') {
         imageUrl = img;
@@ -134,10 +141,6 @@ class DawnParser extends BaseSiteParser {
       author = $('.story__byline a, .byline a, [rel="author"]').first().text().trim() || 'Dawn News Desk';
     }
 
-    if (!publishedAt) {
-      publishedAt = $('time[itemprop="datePublished"], time.story__time').first().attr('datetime') || '';
-    }
-
     if (!imageUrl) {
       imageUrl = $('.story__media img, article img').first().attr('src') || '';
     }
@@ -154,7 +157,6 @@ class DawnParser extends BaseSiteParser {
     return {
       title,
       author,
-      publishedAt,
       content,
       imageUrl: imageUrl || undefined,
     };

@@ -66,6 +66,8 @@ export async function runDiscoverStage(pipelineRunId: string, sourceId: string):
               title: link.title,
               url: link.url,
               category: link.category,
+              description: link.description,
+              extractedData: link.publishedAt ? { publishedAt: link.publishedAt } : undefined,
               status: 'DISCOVERED',
               sourceId: source.id,
               pipelineRunId,

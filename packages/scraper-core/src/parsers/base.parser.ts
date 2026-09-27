@@ -6,12 +6,12 @@ export interface DiscoveredLink {
   title: string;
   category: string;
   description?: string;
+  publishedAt?: string;
 }
 
 export interface ExtractedArticle {
   title: string;
   author?: string;
-  publishedAt?: string;
   content: string;
   imageUrl?: string;
 }

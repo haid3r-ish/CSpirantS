@@ -30,13 +30,16 @@ export async function runEvaluateStage(pipelineRunId: string): Promise<PipelineR
     return stats;
   }
 
-  const items: LlmEvaluationItem[] = articles.map(a => ({
-    hash: a.hash,
-    title: a.title,
-    description: a.description || undefined,
-    sourceGroup: a.source.dedupeGroup || 'default',
-    publishedAt: a.discoveredAt.toISOString(),
-  }));
+  const items: LlmEvaluationItem[] = articles.map(a => {
+    const ext = a.extractedData as Record<string, unknown> | null;
+    return {
+      hash: a.hash,
+      title: a.title,
+      description: a.description || undefined,
+      sourceGroup: a.source.dedupeGroup || 'default',
+      publishedAt: (ext?.publishedAt as string) || a.discoveredAt.toISOString(),
+    };
+  });
 
   const mode = config.LLM_MODE === 'api' ? 'API' : 'MANUAL';
 
