@@ -15,7 +15,7 @@ export async function getArticles(options: GetArticlesOptions) {
   const limit = options.limit || 20;
   
   const where: Prisma.ArticleWhereInput = {
-    status: 'EXTRACTED',
+    status: { in: ['EXTRACTED', 'DEDUPLICATED'] },
   };
 
   if (options.category) {
@@ -49,7 +49,9 @@ export async function getArticles(options: GetArticlesOptions) {
         select: {
           id: true,
           name: true,
-          domain: true
+          domain: true,
+          dedupeGroup: true,
+          dedupePriority: true
         }
       }
     }
@@ -79,8 +81,22 @@ export async function getArticle(id: string) {
     throw new NotFoundError('Article not found');
   }
   
-  if (article.status !== 'EXTRACTED') {
+  if (article.status !== 'EXTRACTED' && article.status !== 'DEDUPLICATED') {
     throw new NotFoundError('Article is not available');
+  }
+
+  if (article.status === 'DEDUPLICATED' && article.canonicalArticleId) {
+    const canonical = await prisma.article.findUnique({
+      where: { id: article.canonicalArticleId },
+      select: { fullContent: true, extractedData: true }
+    });
+    if (canonical) {
+      return {
+        ...article,
+        fullContent: canonical.fullContent,
+        extractedData: canonical.extractedData,
+      };
+    }
   }
 
   return article;

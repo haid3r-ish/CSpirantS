@@ -7,7 +7,9 @@ import { Prisma } from '@repo/db';
 
 const createSourceSchema = z.object({
   name: z.string().min(1),
-  domain: z.string().min(1)
+  domain: z.string().min(1),
+  dedupeGroup: z.string().optional(),
+  dedupePriority: z.coerce.number().int().min(0).default(0),
 });
 
 const updateSourceSchema = createSourceSchema.partial();
@@ -20,7 +22,7 @@ export async function sourceRoutes(server: FastifyInstance) {
 
   server.post('/api/sources', { preHandler: [requireAuth] }, async (request, reply) => {
     const body = createSourceSchema.parse(request.body);
-    const newSource = await sourceService.createSource(body as { name: string; domain: string });
+    const newSource = await sourceService.createSource(body as { name: string; domain: string; dedupeGroup?: string; dedupePriority?: number });
     return reply.status(201).send(newSource);
   });
 

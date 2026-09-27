@@ -95,6 +95,7 @@ When a task is completed, you MUST update this file in **TWO** locations:
 | 9-3 | Evaluate Stage — Process LLM Dedup Groups | 2026-09-26 | apps/api/src/pipeline/stage-evaluate.ts |
 | 4-5d | Slot Scheduler Logic | 2026-09-26 | apps/api/src/pipeline/slot-scheduler.ts |
 | 4-5e | Schedulers — Wire 4 Cron Slots | 2026-09-26 | apps/api/src/queue/schedulers.ts, apps/api/src/pipeline/workers/maintenance.worker.ts |
+| 9-4 | Articles API — Canonical Content Serving | 2026-09-27 | apps/api/src/modules/articles/articles.service.ts, apps/api/src/modules/scraper/source.routes.ts |
 
 ---
 
@@ -137,6 +138,7 @@ When a task is completed, you MUST update this file in **TWO** locations:
 | 9-3 | Evaluate Stage — Process LLM Dedup Groups | `feat(task-9-3): Evaluate Stage Process LLM Dedup Groups` | ✅ Pushed |
 | 4-5d | Slot Scheduler Logic | `feat(task-4-5d): Slot Scheduler Logic` | ✅ Pushed |
 | 4-5e | Schedulers — Wire 4 Cron Slots | `feat(task-4-5e): Schedulers 4-Slot Cron` | ✅ Pushed |
+| 9-4 | Articles API — Canonical Content Serving | `feat(task-9-4): Articles API Canonical Content Serving` | ✅ Pushed |
 
 ---
 
@@ -271,6 +273,8 @@ When a task is completed, you MUST update this file in **TWO** locations:
 | apps/api/src/pipeline/slot-scheduler.ts | Created | 4-5d |
 | apps/api/src/queue/schedulers.ts | Modified | 4-5e |
 | apps/api/src/pipeline/workers/maintenance.worker.ts | Modified | 4-5e |
+| apps/api/src/modules/articles/articles.service.ts | Modified | 9-4 |
+| apps/api/src/modules/scraper/source.routes.ts | Modified | 9-4 |
 ---
 
 ## Architecture Decisions Log
@@ -543,3 +547,7 @@ Notes: Slot lock + direct pipeline trigger per slot. Pool/threshold accumulation
 Task 4-5e: Schedulers 4-Slot Cron — COMPLETED 2026-09-26T21:40:00Z
 Files: apps/api/src/queue/schedulers.ts, apps/api/src/pipeline/workers/maintenance.worker.ts
 Notes: Replaced daily-pipeline-scheduler with 4 slot crons (10, 14, 18, 00). Removed trigger-daily-pipeline handler. Added run-pipeline-slot handler calling runSlot().
+
+Task 9-4: Articles API — Canonical Content Serving — COMPLETED 2026-09-27T09:15:00Z
+Files: apps/api/src/modules/articles/articles.service.ts, apps/api/src/modules/scraper/source.routes.ts
+Notes: Feed includes DEDUPLICATED articles. GET by ID returns canonical fullContent transparently. Source CRUD accepts dedupeGroup/dedupePriority for group management.
