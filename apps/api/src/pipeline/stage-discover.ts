@@ -69,6 +69,7 @@ export async function runDiscoverStage(pipelineRunId: string, sourceId: string):
               status: 'DISCOVERED',
               sourceId: source.id,
               pipelineRunId,
+              discoveredAt: new Date(),
             }
           });
 
@@ -85,6 +86,30 @@ export async function runDiscoverStage(pipelineRunId: string, sourceId: string):
       console.error(`[Discover] Error processing index page ${url}:`, error);
       stats.failed++;
     }
+  }
+
+  // Write stats back to DB
+  const currentRun = await prisma.pipelineRun.findUnique({
+    where: { id: pipelineRunId },
+    select: { stats: true }
+  });
+
+  if (currentRun) {
+    const existingStats = (currentRun.stats as unknown as PipelineRunStats) || {
+      discovered: 0,
+      approved: 0,
+      rejected: 0,
+      extracted: 0,
+      failed: 0,
+    };
+
+    existingStats.discovered = (existingStats.discovered || 0) + stats.discovered;
+    existingStats.failed = (existingStats.failed || 0) + stats.failed;
+
+    await prisma.pipelineRun.update({
+      where: { id: pipelineRunId },
+      data: { stats: existingStats as any },
+    });
   }
 
   return stats;

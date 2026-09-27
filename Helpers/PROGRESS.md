@@ -97,6 +97,7 @@ When a task is completed, you MUST update this file in **TWO** locations:
 | 4-5e | Schedulers — Wire 4 Cron Slots | 2026-09-26 | apps/api/src/queue/schedulers.ts, apps/api/src/pipeline/workers/maintenance.worker.ts |
 | 9-4 | Articles API — Canonical Content Serving | 2026-09-27 | apps/api/src/modules/articles/articles.service.ts, apps/api/src/modules/scraper/source.routes.ts |
 | 9-5 | Sources API — Flexible Query Filtering & Enums | 2026-09-27 | apps/api/src/modules/scraper/source.routes.ts, apps/api/src/modules/scraper/source.service.ts |
+| 9-6 | Pipeline Stats — Update discovered count on stage complete | 2026-09-27 | apps/api/src/pipeline/stage-discover.ts |
 
 ---
 
@@ -141,6 +142,7 @@ When a task is completed, you MUST update this file in **TWO** locations:
 | 4-5e | Schedulers — Wire 4 Cron Slots | `feat(task-4-5e): Schedulers 4-Slot Cron` | ✅ Pushed |
 | 9-4 | Articles API — Canonical Content Serving | `feat(task-9-4): Articles API Canonical Content Serving` | ✅ Pushed |
 | 9-5 | Sources API — Flexible Query Filtering & Enums | `feat(task-9-5): Sources API Query Filters and Enums` | ✅ Pushed |
+| 9-6 | Pipeline Stats — Update discovered count on stage complete | `fix(task-9-6): Pipeline Stats Discover Update` | ✅ Pushed |
 
 ---
 
@@ -557,3 +559,7 @@ Notes: Feed includes DEDUPLICATED articles. GET by ID returns canonical fullCont
 Task 9-5: Sources API — Flexible Query Filtering & Enums — COMPLETED 2026-09-27T10:06:00Z
 Files: apps/api/src/modules/scraper/source.routes.ts, apps/api/src/modules/scraper/source.service.ts, apps/api/src/modules/scraper/source.routes.test.ts
 Notes: Refactored source retrieval to accept dynamic query filters (isActive, dedupeGroup). Enforced a strict Zod enum for dedupeGroup ('pakistan', 'india') across creations, updates, and queries. Removed orderBy requirement.
+
+Task 9-6: Pipeline Stats — Update discovered count on stage complete — COMPLETED 2026-09-27T12:05:00Z
+Files: apps/api/src/pipeline/stage-discover.ts
+Notes: Fixed issue where pipelineRun stats were not updated with the discovered count after the discover stage completed. Added discoveredAt timestamp to article creation.
