@@ -16,12 +16,19 @@ export function formatBatchPayload(items: LlmEvaluationItem[], defaultSourceGrou
     .map((item) => {
       const title = sanitize(item.title);
       const desc = sanitize(item.description ?? '');
-      // Format publishedAt as HH:mm if available, else --:--
+      // Format publishedAt as HH:mm if available, preserving the local timezone of the source string
       let pubTime = '--:--';
       if (item.publishedAt) {
-        const d = new Date(item.publishedAt);
-        if (!isNaN(d.getTime())) {
-          pubTime = `${d.getUTCHours().toString().padStart(2, '0')}:${d.getUTCMinutes().toString().padStart(2, '0')}`;
+        // Attempt to extract raw HH:MM directly from string (e.g. "2026-09-27T08:19:07+05:00" -> "08:19")
+        const match = item.publishedAt.match(/T(\d{2}):(\d{2})/);
+        if (match) {
+          pubTime = `${match[1]}:${match[2]}`;
+        } else {
+          // Fallback if it's not a standard ISO string
+          const d = new Date(item.publishedAt);
+          if (!isNaN(d.getTime())) {
+            pubTime = `${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')}`;
+          }
         }
       }
       return `${item.hash}|${title}|${desc}|${defaultSourceGroup}|${pubTime}`;

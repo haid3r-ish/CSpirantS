@@ -99,6 +99,7 @@ When a task is completed, you MUST update this file in **TWO** locations:
 | 9-5 | Sources API — Flexible Query Filtering & Enums | 2026-09-27 | apps/api/src/modules/scraper/source.routes.ts, apps/api/src/modules/scraper/source.service.ts |
 | 9-6 | Pipeline Stats — Update discovered count on stage complete | 2026-09-27 | apps/api/src/pipeline/stage-discover.ts |
 | 9-7 | Refactor publishedAt to Discover Stage & Improve LLM Prompt | 2026-09-27 | apps/api/src/pipeline/stage-*.ts, packages/scraper-core/src/parsers/*.ts, packages/llm-core/src/prompts/css-pms-filter.ts |
+| 9-8 | Fix Timezone Shift in LLM Prompt | 2026-09-27 | packages/llm-core/src/formatter/pipe-delimited.ts |
 
 ---
 
@@ -145,6 +146,7 @@ When a task is completed, you MUST update this file in **TWO** locations:
 | 9-5 | Sources API — Flexible Query Filtering & Enums | `feat(task-9-5): Sources API Query Filters and Enums` | ✅ Pushed |
 | 9-6 | Pipeline Stats — Update discovered count on stage complete | `fix(task-9-6): Pipeline Stats Discover Update` | ✅ Pushed |
 | 9-7 | Refactor publishedAt to Discover Stage & Improve LLM Prompt | `refactor(task-9-7): Move publishedAt to discover stage and overhaul LLM prompt` | ✅ Pushed |
+| 9-8 | Fix Timezone Shift in LLM Prompt | `fix(task-9-8): Preserve local timezone in LLM prompt formatting` | ✅ Pushed |
 
 ---
 
@@ -569,3 +571,7 @@ Notes: Fixed issue where pipelineRun stats were not updated with the discovered 
 Task 9-7: Refactor publishedAt to Discover Stage & Improve LLM Prompt — COMPLETED 2026-09-27T12:55:00Z
 Files: apps/api/src/pipeline/stage-discover.ts, apps/api/src/pipeline/stage-extract.ts, apps/api/src/pipeline/stage-evaluate.ts, packages/scraper-core/src/parsers/dawn.parser.ts, packages/scraper-core/src/parsers/base.parser.ts, packages/llm-core/src/prompts/css-pms-filter.ts
 Notes: Moved publishedAt extraction from the deep extract stage to the initial discover stage. Stored the timestamp inside the existing extractedData JSON field to avoid Prisma schema migrations. Overhauled the LLM prompt to include precise rules, explicit categories, and strict dual-line output formatting.
+
+Task 9-8: Fix Timezone Shift in LLM Prompt — COMPLETED 2026-09-27T13:08:00Z
+Files: packages/llm-core/src/formatter/pipe-delimited.ts
+Notes: Replaced getUTCHours() with a direct Regex match to extract HH:MM from the publishedAt string. This ensures the LLM receives the exact local time the newspaper printed, avoiding mathematical UTC timezone shifts that could confuse the LLM's deduplication logic based on time-of-day context.
