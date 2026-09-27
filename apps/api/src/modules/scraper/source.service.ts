@@ -1,9 +1,23 @@
 import { prisma } from '@repo/db';
 import type { Prisma } from '@repo/db';
 
-export async function getAllSources() {
+export interface GetSourcesOptions {
+  isActive?: boolean;
+  dedupeGroup?: string;
+}
+
+export async function getSources(options: GetSourcesOptions = {}) {
+  const where: Prisma.ScraperSourceWhereInput = {};
+  
+  if (options.isActive !== undefined) {
+    where.isActive = options.isActive;
+  }
+  if (options.dedupeGroup !== undefined) {
+    where.dedupeGroup = options.dedupeGroup;
+  }
+  
   return prisma.scraperSource.findMany({
-    where: { isActive: true },
+    where,
   });
 }
 

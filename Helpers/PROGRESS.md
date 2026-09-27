@@ -96,6 +96,7 @@ When a task is completed, you MUST update this file in **TWO** locations:
 | 4-5d | Slot Scheduler Logic | 2026-09-26 | apps/api/src/pipeline/slot-scheduler.ts |
 | 4-5e | Schedulers — Wire 4 Cron Slots | 2026-09-26 | apps/api/src/queue/schedulers.ts, apps/api/src/pipeline/workers/maintenance.worker.ts |
 | 9-4 | Articles API — Canonical Content Serving | 2026-09-27 | apps/api/src/modules/articles/articles.service.ts, apps/api/src/modules/scraper/source.routes.ts |
+| 9-5 | Sources API — Flexible Query Filtering & Enums | 2026-09-27 | apps/api/src/modules/scraper/source.routes.ts, apps/api/src/modules/scraper/source.service.ts |
 
 ---
 
@@ -139,6 +140,7 @@ When a task is completed, you MUST update this file in **TWO** locations:
 | 4-5d | Slot Scheduler Logic | `feat(task-4-5d): Slot Scheduler Logic` | ✅ Pushed |
 | 4-5e | Schedulers — Wire 4 Cron Slots | `feat(task-4-5e): Schedulers 4-Slot Cron` | ✅ Pushed |
 | 9-4 | Articles API — Canonical Content Serving | `feat(task-9-4): Articles API Canonical Content Serving` | ✅ Pushed |
+| 9-5 | Sources API — Flexible Query Filtering & Enums | `feat(task-9-5): Sources API Query Filters and Enums` | ✅ Pushed |
 
 ---
 
@@ -551,3 +553,7 @@ Notes: Replaced daily-pipeline-scheduler with 4 slot crons (10, 14, 18, 00). Rem
 Task 9-4: Articles API — Canonical Content Serving — COMPLETED 2026-09-27T09:15:00Z
 Files: apps/api/src/modules/articles/articles.service.ts, apps/api/src/modules/scraper/source.routes.ts
 Notes: Feed includes DEDUPLICATED articles. GET by ID returns canonical fullContent transparently. Source CRUD accepts dedupeGroup/dedupePriority for group management.
+
+Task 9-5: Sources API — Flexible Query Filtering & Enums — COMPLETED 2026-09-27T10:06:00Z
+Files: apps/api/src/modules/scraper/source.routes.ts, apps/api/src/modules/scraper/source.service.ts, apps/api/src/modules/scraper/source.routes.test.ts
+Notes: Refactored source retrieval to accept dynamic query filters (isActive, dedupeGroup). Enforced a strict Zod enum for dedupeGroup ('pakistan', 'india') across creations, updates, and queries. Removed orderBy requirement.

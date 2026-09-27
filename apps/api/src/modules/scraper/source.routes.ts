@@ -5,18 +5,26 @@ import * as sourceService from './source.service.js';
 import { NotFoundError } from '../../core/errors.js';
 import { Prisma } from '@repo/db';
 
+const DedupeGroupEnum = z.enum(['pakistan', 'india']);
+
 const createSourceSchema = z.object({
   name: z.string().min(1),
   domain: z.string().min(1),
-  dedupeGroup: z.string().optional(),
+  dedupeGroup: DedupeGroupEnum.optional(),
   dedupePriority: z.coerce.number().int().min(0).default(0),
 });
 
 const updateSourceSchema = createSourceSchema.partial();
 
+const getSourcesQuerySchema = z.object({
+  isActive: z.enum(['true', 'false']).transform(val => val === 'true').optional(),
+  dedupeGroup: DedupeGroupEnum.optional(),
+});
+
 export async function sourceRoutes(server: FastifyInstance) {
   server.get('/api/sources', { preHandler: [requireAuth] }, async (request, reply) => {
-    const sources = await sourceService.getAllSources();
+    const query = getSourcesQuerySchema.parse(request.query);
+    const sources = await sourceService.getSources(query);
     return sources;
   });
 
@@ -29,7 +37,7 @@ export async function sourceRoutes(server: FastifyInstance) {
   server.put('/api/sources/:id', { preHandler: [requireAuth] }, async (request, reply) => {
     const { id } = request.params as { id: string };
     const body = updateSourceSchema.parse(request.body);
-    
+
     try {
       const updated = await sourceService.updateSource(id, body as Prisma.ScraperSourceUpdateInput);
       return updated;
