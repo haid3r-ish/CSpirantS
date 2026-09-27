@@ -27,6 +27,7 @@ export async function runSlot(hour: number): Promise<void> {
       data: {
         status: 'RUNNING',
         currentStage: 'DISCOVER',
+        sourceIds,
         startedAt: new Date(),
         stats: {
           discovered: 0,

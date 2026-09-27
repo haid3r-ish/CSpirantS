@@ -100,6 +100,7 @@ When a task is completed, you MUST update this file in **TWO** locations:
 | 9-6 | Pipeline Stats — Update discovered count on stage complete | 2026-09-27 | apps/api/src/pipeline/stage-discover.ts |
 | 9-7 | Refactor publishedAt to Discover Stage & Improve LLM Prompt | 2026-09-27 | apps/api/src/pipeline/stage-*.ts, packages/scraper-core/src/parsers/*.ts, packages/llm-core/src/prompts/css-pms-filter.ts |
 | 9-8 | Fix Timezone Shift in LLM Prompt | 2026-09-27 | packages/llm-core/src/formatter/pipe-delimited.ts |
+| 9-9 | Add missing sourceIds to Scheduled PipelineRun | 2026-09-27 | apps/api/src/pipeline/slot-scheduler.ts |
 
 ---
 
@@ -147,6 +148,7 @@ When a task is completed, you MUST update this file in **TWO** locations:
 | 9-6 | Pipeline Stats — Update discovered count on stage complete | `fix(task-9-6): Pipeline Stats Discover Update` | ✅ Pushed |
 | 9-7 | Refactor publishedAt to Discover Stage & Improve LLM Prompt | `refactor(task-9-7): Move publishedAt to discover stage and overhaul LLM prompt` | ✅ Pushed |
 | 9-8 | Fix Timezone Shift in LLM Prompt | `fix(task-9-8): Preserve local timezone in LLM prompt formatting` | ✅ Pushed |
+| 9-9 | Add missing sourceIds to Scheduled PipelineRun | `fix(task-9-9): add missing sourceIds payload to slot scheduler pipeline creation` | ✅ Pushed |
 
 ---
 
@@ -575,3 +577,7 @@ Notes: Moved publishedAt extraction from the deep extract stage to the initial d
 Task 9-8: Fix Timezone Shift in LLM Prompt — COMPLETED 2026-09-27T13:08:00Z
 Files: packages/llm-core/src/formatter/pipe-delimited.ts
 Notes: Replaced getUTCHours() with a direct Regex match to extract HH:MM from the publishedAt string. This ensures the LLM receives the exact local time the newspaper printed, avoiding mathematical UTC timezone shifts that could confuse the LLM's deduplication logic based on time-of-day context.
+
+Task 9-9: Add missing sourceIds to Scheduled PipelineRun — COMPLETED 2026-09-27T15:09:00Z
+Files: apps/api/src/pipeline/slot-scheduler.ts
+Notes: Fixed a bug where the cron scheduler was correctly triggering the orchestrator with all active sources, but failed to log the sourceIds array into the PipelineRun database record. The pipeline record now correctly reflects all sources involved in a scheduled run.
