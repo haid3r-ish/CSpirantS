@@ -3,7 +3,7 @@ import { fastifyOauth2 } from '@fastify/oauth2';
 import { config } from '../../core/config.js';
 import * as authService from './auth.service.js';
 import { requireAuth } from './auth.middleware.js';
-import { UnauthorizedError } from '../../core/errors.js';
+import { UnauthorizedError, wrapError } from '../../core/errors.js';
 
 export async function authRoutes(server: FastifyInstance) {
   server.register(fastifyOauth2, {
@@ -24,20 +24,29 @@ export async function authRoutes(server: FastifyInstance) {
     // @ts-expect-error fastify/oauth2 dynamically adds this decorator
     const { token } = await server.googleOAuth2.getAccessTokenFromAuthorizationCodeFlow(request);
 
-    const userinfoResponse = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
-      headers: { Authorization: `Bearer ${token.access_token}` }
-    });
+    const userinfoResponse = await wrapError(
+      fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+        headers: { Authorization: `Bearer ${token.access_token}` },
+        signal: AbortSignal.timeout(10000)
+      }),
+      new UnauthorizedError('Google authentication service is currently unavailable')
+    );
 
     if (!userinfoResponse.ok) {
       throw new UnauthorizedError('Failed to fetch user info from Google');
     }
 
-    const googleProfile = await userinfoResponse.json() as {
-      sub: string;
-      email: string;
-      name: string;
-      picture?: string;
-    };
+    const rawData = await userinfoResponse.json();
+    if (
+      !rawData ||
+      typeof rawData !== 'object' ||
+      typeof (rawData as any).sub !== 'string' ||
+      typeof (rawData as any).email !== 'string' ||
+      typeof (rawData as any).name !== 'string'
+    ) {
+      throw new UnauthorizedError('Invalid user info from Google');
+    }
+    const googleProfile = rawData as { sub: string; email: string; name: string; picture?: string };
 
     const user = await authService.createOrUpdateUser({
       id: googleProfile.sub,
@@ -48,7 +57,7 @@ export async function authRoutes(server: FastifyInstance) {
 
     const session = await authService.createSession(user.id);
 
-    console.log(`[AUTH] User logged in successfully. Session ID: ${session.id}`);
+    console.log(`[AUTH] User logged in successfully. User ID: ${user.id}`);
 
     reply.setCookie('session_id', session.id, {
       httpOnly: true,
@@ -60,6 +69,8 @@ export async function authRoutes(server: FastifyInstance) {
 
     return reply.redirect(`${config.FRONTEND_URL}/dashboard`);
   });
+
+
 
   server.get('/api/auth/me', { preHandler: [requireAuth] }, async (request, reply) => {
     return request.user;

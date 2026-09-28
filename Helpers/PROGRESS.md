@@ -101,6 +101,7 @@ When a task is completed, you MUST update this file in **TWO** locations:
 | 9-7 | Refactor publishedAt to Discover Stage & Improve LLM Prompt | 2026-09-27 | apps/api/src/pipeline/stage-*.ts, packages/scraper-core/src/parsers/*.ts, packages/llm-core/src/prompts/css-pms-filter.ts |
 | 9-8 | Fix Timezone Shift in LLM Prompt | 2026-09-27 | packages/llm-core/src/formatter/pipe-delimited.ts |
 | 9-9 | Add missing sourceIds to Scheduled PipelineRun | 2026-09-27 | apps/api/src/pipeline/slot-scheduler.ts |
+| 1-1a.2 | wrapError Promise Rejection Utility | 2026-09-28 | apps/api/src/core/errors.ts, apps/api/src/modules/auth/auth.routes.ts |
 
 ---
 
@@ -149,6 +150,7 @@ When a task is completed, you MUST update this file in **TWO** locations:
 | 9-7 | Refactor publishedAt to Discover Stage & Improve LLM Prompt | `refactor(task-9-7): Move publishedAt to discover stage and overhaul LLM prompt` | ✅ Pushed |
 | 9-8 | Fix Timezone Shift in LLM Prompt | `fix(task-9-8): Preserve local timezone in LLM prompt formatting` | ✅ Pushed |
 | 9-9 | Add missing sourceIds to Scheduled PipelineRun | `fix(task-9-9): add missing sourceIds payload to slot scheduler pipeline creation` | ✅ Pushed |
+| 1-1a.2 | wrapError Promise Rejection Utility | `feat(task-1-1a.2): add wrapError utility for modular Promise rejection mapping` | ⏳ Pending |
 
 ---
 
@@ -285,6 +287,8 @@ When a task is completed, you MUST update this file in **TWO** locations:
 | apps/api/src/pipeline/workers/maintenance.worker.ts | Modified | 4-5e |
 | apps/api/src/modules/articles/articles.service.ts | Modified | 9-4 |
 | apps/api/src/modules/scraper/source.routes.ts | Modified | 9-4 |
+| apps/api/src/core/errors.ts | Modified | 1-1a.2 |
+| apps/api/src/modules/auth/auth.routes.ts | Modified | 1-1a.2 |
 ---
 
 ## Architecture Decisions Log
@@ -321,6 +325,30 @@ When a task is completed, you MUST update this file in **TWO** locations:
 - [ ] LLM_MODE (api | manual)
 - [ ] FRONTEND_URL
 - [ ] VITE_API_URL
+
+---
+
+## Post Audit Progress
+
+### Audit Completed Tasks
+
+| Task ID | Card / File | Completed At | Fixes Applied |
+|---------|-------------|--------------|---------------|
+| Audit-1 | apps_api_src_modules_auth_auth.routes.ts | 2026-09-28 | Fixed `sys-rel-1` (missing timeout), `sec-2` (sensitive log), `gp-18` (untrusted data validation), `gp-15` (explicit feature gates), and `gp-9` (cookie duplication) |
+
+### Audit File Registry
+
+| File Path | Associated Card | Changes | Status |
+|-----------|-----------------|---------|--------|
+| apps/api/src/modules/auth/auth.routes.ts | .audit/cards/apps_api_src_modules_auth_auth.routes.ts.card.yml | Replaced missing timeout, removed sensitive log, refactored mock login gate to use ENABLE_MOCK_LOGIN, and grouped cookie logic | Modified |
+
+### Audit Git Commit Registry
+
+| Task ID | Card | Commit Message | Push Status |
+|---------|------|----------------|-------------|
+| Audit-1 | apps_api_src_modules_auth_auth.routes.ts | `fix(audit-1): resolve auth.routes.ts findings (sys-rel-1, sec-2, gp-18, gp-15, gp-9)` | ⏳ Pending |
+
+---
 
 Task 0-1: Initialize Turborepo Monorepo — COMPLETED 2026-09-08T23:51:00Z
 Files: package.json, pnpm-workspace.yaml, turbo.json, packages/ts-config/*
@@ -480,6 +508,7 @@ Task 1-1a: Global Error Handler Overhaul — COMPLETED 2026-09-25T13:38:00Z
 Files: apps/api/src/core/errors.ts (created), error-handler.ts (modified), server.ts (modified), pipeline.routes.ts (modified), llm-batch.routes.ts (modified), articles.routes.ts (modified), articles.service.ts (modified), source.routes.ts (modified), vocab.routes.ts (modified)
 Notes: Centralized error handling. Removed try/catch anti-pattern from all route files. Added NotFoundHandler and AppError hierarchy.
   - *Sub-task 1-1a.1 (Service & Auth Patch)*: Updated `auth.middleware.ts`, `auth.routes.ts`, `pipeline.service.ts`, and `llm-batch.service.ts` to replace manual `reply.status(401)` and generic `throw new Error()` calls with specific `AppError` subclasses.
+  - *Sub-task 1-1a.2 (wrapError Promise Rejection Utility)*: Implemented `wrapError` in `apps/api/src/core/errors.ts` to cleanly handle asynchronous operations and translate Promise rejections into domain `AppError`s without verbose local try/catch blocks. Integrated into `auth.routes.ts` Google userinfo fetch.
 
 Task 2-3c: Dawn Parser Date Guard — COMPLETED 2026-09-25T14:38:00Z
 Files: packages/scraper-core/src/parsers/errors.ts (created), base.parser.ts (modified), dawn.parser.ts (modified), scraper-core/src/index.ts (modified), apps/api/src/pipeline/stage-discover.ts (modified)

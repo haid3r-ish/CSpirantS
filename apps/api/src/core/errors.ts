@@ -16,3 +16,16 @@ export class UnauthorizedError extends AppError {
 export class ConflictError extends AppError {
   constructor(message: string) { super(409, message); }
 }
+
+/**
+ * Wraps a promise and automatically maps any rejected error into a custom AppError.
+ * Keeps controllers clean from boilerplate try/catch blocks.
+ */
+export async function wrapError<T>(promise: Promise<T>, errorToThrow: Error): Promise<T> {
+  try {
+    return await promise;
+  } catch (err: unknown) {
+    throw errorToThrow;
+  }
+}
+
