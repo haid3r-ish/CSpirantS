@@ -1,0 +1,57 @@
+---
+file: apps/api/src/modules/auth/auth.routes.ts
+hash: 62957d80
+purpose_1line: Registers OAuth2 routes and handles Google login callbacks.
+status: clean
+
+# Note: plain.does = non-tech, plain English. purpose_1line = dense, for tech readers. They must not be identical.
+plain:
+  does: Provides the web addresses for users to click "Log in with Google" and handles the return trip.
+  risks: []
+
+imports: []
+
+api:
+  - {sym: "authRoutes", kind: "fn", purpose: "Register auth endpoints", side_effects: "fastify"}
+
+findings: []
+
+previous_findings:
+  - cat: convention
+    group: runtime
+    rule_ref: sys-rel-1
+    severity: CRITICAL
+    confidence: 1.00
+    evidence: {start: 1, end: 1, hash: "unknown"}
+    why: "The code already uses AbortSignal.timeout(10000) on the fetch call. [STATUS: FALSE_POSITIVE]"
+    fix: "N/A"
+    source: rule
+    resolved: true
+  - cat: convention
+    group: runtime
+    rule_ref: sec-2
+    severity: CRITICAL
+    confidence: 1.00
+    evidence: {start: 1, end: 1, hash: "unknown"}
+    why: "The code logs user.id, not session.id. [STATUS: FALSE_POSITIVE]"
+    fix: "N/A"
+    source: rule
+    resolved: true
+  - cat: convention
+    group: runtime
+    rule_ref: gp-7
+    severity: HIGH
+    confidence: 1.00
+    evidence: {start: 27, end: 30, hash: "new-hash"}
+    why: "The fetch call to Google API is not wrapped in a try/catch. Network errors will throw unhandled rejections to the router. [STATUS: RESOLVED]"
+    fix: "Wrap fetch in a try/catch and rethrow a typed UnauthorizedError or InternalServerError."
+    source: verify-review
+    first_seen: 2026-09-28T16:45:00.000Z
+    resolved: true
+dead_code: []
+modularity: []
+open_questions: []
+meta: {analyzer: "Antigravity", reused: false, analyzed_at: "2026-09-27T18:10:12.704Z", passes_run: [0, 1, 2, 3, 4]
+  verify_count: 2}
+  last_fix_at: "2026-09-28T16:30:00.000Z"
+---
