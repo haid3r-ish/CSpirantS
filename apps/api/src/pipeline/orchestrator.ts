@@ -7,6 +7,11 @@ export interface TriggerPipelineOptions {
   manual?: boolean; // If true, skip LLM evaluation — go straight to AWAITING_MANUAL
 }
 
+const defaultJobOpts = {
+  attempts: 3,
+  backoff: { type: 'exponential' as const, delay: 5000 },
+};
+
 export async function triggerPipeline(
   sourceIds: string[],
   pipelineRunId: string,
@@ -17,9 +22,15 @@ export async function triggerPipeline(
     // Create discover jobs but no evaluate/extract flow
     const flow = new FlowProducer({ connection: redisConnection });
     // We still discover articles but skip evaluate — pipeline will await manual resolution
-    for (const sourceId of sourceIds) {
-      await discoverQueue.add(`discover-${sourceId}`, { pipelineRunId, sourceId, skipEvaluate: true });
-    }
+    
+    await discoverQueue.addBulk(
+      sourceIds.map((sourceId) => ({
+        name: `discover-${sourceId}`,
+        data: { pipelineRunId, sourceId, skipEvaluate: true },
+        opts: defaultJobOpts,
+      }))
+    );
+
     await prisma.pipelineRun.update({
       where: { id: pipelineRunId },
       data: { status: 'AWAITING_MANUAL', currentStage: 'DISCOVER' },
@@ -35,19 +46,18 @@ export async function triggerPipeline(
     name: 'stage-extract',
     queueName: 'pipeline-extract',
     data: { pipelineRunId },
+    opts: defaultJobOpts,
     children: [
       {
         name: 'stage-evaluate',
         queueName: 'pipeline-evaluate',
         data: { pipelineRunId },
+        opts: defaultJobOpts,
         children: sourceIds.map((sourceId) => ({
           name: `discover-${sourceId}`,
           queueName: 'pipeline-discover',
           data: { pipelineRunId, sourceId },
-          opts: {
-            attempts: 3,
-            backoff: { type: 'exponential' as const, delay: 5000 },
-          },
+          opts: defaultJobOpts,
         })),
       },
     ],

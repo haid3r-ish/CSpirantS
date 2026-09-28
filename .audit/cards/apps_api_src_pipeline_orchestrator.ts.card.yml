@@ -1,0 +1,44 @@
+---
+file: apps/api/src/pipeline/orchestrator.ts
+hash: b33eed8d
+purpose_1line: Creates and enqueues BullMQ FlowProducer jobs for the pipeline.
+status: clean
+
+plain:
+  does: Tells the background queue system to start running the scraping jobs in a specific order (discover, then evaluate, then extract).
+  risks: []
+
+imports: []
+
+api:
+  - {sym: "triggerPipeline", kind: "fn", purpose: "Enqueue BullMQ flow", side_effects: "queue,db"}
+
+findings: []
+
+previous_findings:
+  - cat: convention
+    group: runtime
+    rule_ref: sys-rel-2
+    severity: CRITICAL
+    confidence: 1.00
+    evidence: {start: 1, end: 1, hash: "unknown"}
+    why: "The stage-extract, stage-evaluate, and manual discoverQueue.add jobs are missing the required attempts and backoff options. Only the automatic discover grandchildren jobs have them. [STATUS: RESOLVED]"
+    fix: "Add opts: { attempts: 3, backoff: { type: 'exponential' as const, delay: 5000 } } to stage-extract, stage-evaluate and the manual discoverQueue.add calls."
+    source: rule
+    resolved: true
+  - cat: convention
+    group: runtime
+    rule_ref: gp-23
+    severity: HIGH
+    confidence: 1.00
+    evidence: {start: 20, end: 22, hash: "unknown"}
+    why: "Sequential awaits inside for...of loop when queuing independent manual discover jobs. [STATUS: RESOLVED]"
+    fix: "Replace with discoverQueue.addBulk(...) or Promise.all(sourceIds.map(...))."
+    source: verify-review
+    resolved: true
+
+dead_code: []
+modularity: []
+open_questions: []
+meta: {analyzer: "Antigravity", reused: false, analyzed_at: "2026-09-28T18:31:30.912Z", passes_run: [0, 1, 2, 3, 4, 5], verify_count: 1}
+---
