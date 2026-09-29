@@ -3,8 +3,8 @@ last_updated: 2026-09-29T05:54:01.000Z
 conventions_version: v16
 
 ## Summary
-total_findings: 33
-open: 23
+total_findings: 34
+open: 24
 in_progress: 0
 fixed_pending_verify: 0
 verified_fixed: 10
@@ -248,6 +248,20 @@ entries:
     source: rule
     status: open
     first_seen: 2026-09-27T18:17:39.545Z
+    approved_at: null
+    applied_at: null
+    verified_at: null
+    approach: null
+    commit: null
+    notes: null
+  - id: .audit/cards/apps_api_src_pipeline_stage-evaluate.ts.card.yml:new-1
+    card: .audit/cards/apps_api_src_pipeline_stage-evaluate.ts.card.yml
+    file: apps/api/src/pipeline/stage-evaluate.ts
+    rule_ref: gp-18
+    severity: MED
+    source: verify-review
+    status: open
+    first_seen: 2026-09-29T22:00:00.000Z
     approved_at: null
     applied_at: null
     verified_at: null

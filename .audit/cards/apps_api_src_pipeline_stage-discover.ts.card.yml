@@ -16,6 +16,58 @@ api:
 
 findings: []
 
+previous_findings:
+  - cat: convention
+    group: runtime
+    rule_ref: sys-rel-5
+    severity: HIGH
+    confidence: 1.00
+    evidence: {start: 1, end: 1, hash: "unknown"}
+    why: "REAL finding according to step 1 triage. [STATUS: RESOLVED]"
+    fix: "Fix applied."
+    source: rule
+    resolved: true
+  - cat: convention
+    group: runtime
+    rule_ref: eff-1a
+    severity: HIGH
+    confidence: 1.00
+    evidence: {start: 1, end: 1, hash: "unknown"}
+    why: "REAL finding according to step 1 triage. [STATUS: RESOLVED]"
+    fix: "Fix applied."
+    source: rule
+    resolved: true
+  - cat: convention
+    group: runtime
+    rule_ref: pip-2
+    severity: CRITICAL
+    confidence: 1.00
+    evidence: {start: 1, end: 1, hash: "unknown"}
+    why: "REAL finding according to step 1 triage. [STATUS: RESOLVED]"
+    fix: "Fix applied."
+    source: rule
+    resolved: true
+  - cat: convention
+    group: runtime
+    rule_ref: gp-14
+    severity: HIGH
+    confidence: 1.00
+    evidence: {start: 80, end: 88, hash: "unknown"}
+    why: "Logging errors without context correlation IDs (pipelineRunId, sourceId). [STATUS: RESOLVED]"
+    fix: "Include pipelineRunId and sourceId in the console.warn / console.error messages."
+    source: verify-review
+    resolved: true
+  - cat: convention
+    group: runtime
+    rule_ref: gp-27
+    severity: MED
+    confidence: 1.00
+    evidence: {start: 14, end: 14, hash: "unknown"}
+    why: "Throwing a raw Error instead of a typed error. [STATUS: RESOLVED]"
+    fix: "Throw a domain-specific error instead of Error."
+    source: verify-review
+    resolved: true
+
 dead_code: []
 modularity: []
 open_questions: []
