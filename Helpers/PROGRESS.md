@@ -518,6 +518,7 @@ Files: apps/api/src/core/errors.ts (created), error-handler.ts (modified), serve
 Notes: Centralized error handling. Removed try/catch anti-pattern from all route files. Added NotFoundHandler and AppError hierarchy.
   - *Sub-task 1-1a.1 (Service & Auth Patch)*: Updated `auth.middleware.ts`, `auth.routes.ts`, `pipeline.service.ts`, and `llm-batch.service.ts` to replace manual `reply.status(401)` and generic `throw new Error()` calls with specific `AppError` subclasses.
   - *Sub-task 1-1a.2 (wrapError Promise Rejection Utility)*: Implemented `wrapError` in `apps/api/src/core/errors.ts` to cleanly handle asynchronous operations and translate Promise rejections into domain `AppError`s without verbose local try/catch blocks. Integrated into `auth.routes.ts` Google userinfo fetch.
+  - *Sub-task 1-1a.3 (Add Typed Error Classes)*: Added `InternalServerError` and `ValidationError` to `apps/api/src/core/errors.ts` to support pipeline stage typed error handling.
 
 Task 2-3c: Dawn Parser Date Guard — COMPLETED 2026-09-25T14:38:00Z
 Files: packages/scraper-core/src/parsers/errors.ts (created), base.parser.ts (modified), dawn.parser.ts (modified), scraper-core/src/index.ts (modified), apps/api/src/pipeline/stage-discover.ts (modified)
@@ -635,3 +636,7 @@ Notes: Fixed sys-rel-5 (runtime timeout budget wrapper), eff-1a (batched article
 Task Audit-4: Pipeline Stage-Evaluate Audit Fixes — COMPLETED 2026-09-29T23:25:00Z
 Files: apps/api/src/pipeline/stage-evaluate.ts, .audit/cards/apps_api_src_pipeline_stage-evaluate.ts.card.yml, .audit/fix-ledger.md
 Notes: Fixed sys-rel-5, sys-rel-6, eff-1a, pip-2, gp-18, gp-14, and gp-27.
+
+Task Audit-5: Pipeline Stage-Extract Audit Fixes — COMPLETED 2026-09-29T23:45:00Z
+Files: apps/api/src/pipeline/stage-extract.ts, .audit/cards/apps_api_src_pipeline_stage-extract.ts.card.yml
+Notes: Fixed sys-rel-5, eff-1a, pip-2, gp-14, gp-18, and gp-27.

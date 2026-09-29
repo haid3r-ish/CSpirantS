@@ -16,6 +16,12 @@ export class UnauthorizedError extends AppError {
 export class ConflictError extends AppError {
   constructor(message: string) { super(409, message); }
 }
+export class InternalServerError extends AppError {
+  constructor(message = 'Internal Server Error') { super(500, message); }
+}
+export class ValidationError extends AppError {
+  constructor(message = 'Validation Error') { super(400, message); }
+}
 
 /**
  * Wraps a promise and automatically maps any rejected error into a custom AppError.
