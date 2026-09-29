@@ -1,0 +1,105 @@
+---
+file: apps/api/src/pipeline/stage-evaluate.ts
+hash: da18439b
+purpose_1line: Executes the EVALUATE stage of the scraping pipeline.
+status: clean
+
+# Note: plain.does = non-tech, plain English. purpose_1line = dense, for tech readers. They must not be identical.
+plain:
+  does: Sends the newly discovered articles to the AI to check if they are useful, and processes the AI's response.
+  risks: []
+
+imports: []
+
+api:
+  - {sym: "runEvaluateStage", kind: "fn", purpose: "Execute LLM evaluation on discovered articles", side_effects: "db,net"}
+
+findings: []
+
+previous_findings:
+  - cat: convention
+    group: runtime
+    rule_ref: sys-rel-5
+    severity: HIGH
+    confidence: 1.00
+    evidence: {start: 6, end: 7, hash: "82754779"}
+    why: "The runEvaluateStage function lacks a maximum runtime budget wrapper. [STATUS: RESOLVED]"
+    fix: "Wrap the stage execution in a timeout to prevent infinite hangs."
+    failure_mode: "Worker process hangs indefinitely, blocking queue consumption."
+    blast_radius: system
+    resolved: true
+
+  - cat: convention
+    group: runtime
+    rule_ref: sys-rel-6
+    severity: CRITICAL
+    confidence: 1.00
+    evidence: {start: 118, end: 120, hash: "d6fe6954"}
+    why: "try/catch block is placed outside the deduplication loop. A single article update failure aborts deduplication for the rest of the batch. [STATUS: RESOLVED]"
+    fix: "Move the try/catch block inside the loops so individual item failures do not kill the batch."
+    failure_mode: "Transient DB error skips deduplication for hundreds of valid articles."
+    blast_radius: batch
+    resolved: true
+
+  - cat: convention
+    group: resource
+    rule_ref: eff-1a
+    severity: HIGH
+    confidence: 1.00
+    evidence: {start: 140, end: 148, hash: "ac2c3cfd"}
+    why: "Executes prisma.article.update sequentially inside a nested loop for deduplication. [STATUS: RESOLVED]"
+    fix: "Accumulate updates and execute them via updateMany or Prisma's $transaction array."
+    failure_mode: "Database connection pool exhaustion and high latency during large batches."
+    blast_radius: stage
+    resolved: true
+
+  - cat: convention
+    group: domain
+    rule_ref: pip-2
+    severity: CRITICAL
+    confidence: 1.00
+    evidence: {start: 178, end: 185, hash: "36628aa8"}
+    why: "Non-atomic read-modify-write of PipelineRun.stats. [STATUS: RESOLVED]"
+    fix: "Use atomic JSON updates or an explicit transaction with pessimistic locking."
+    failure_mode: "Concurrent workers overwrite each other's stats, leading to inaccurate progress tracking."
+    blast_radius: system
+    resolved: true
+
+  - cat: convention
+    group: runtime
+    rule_ref: gp-18
+    severity: MED
+    confidence: 1.00
+    evidence: {start: 20, end: 20, hash: "unknown"}
+    why: "Unvalidated type assertion (pipelineRun.stats as unknown as PipelineRunStats). [STATUS: RESOLVED]"
+    fix: "Use Zod or another schema validation library to validate the JSON stats at runtime."
+    source: fix-review
+    resolved: true
+
+  - cat: convention
+    group: runtime
+    rule_ref: gp-14
+    severity: HIGH
+    confidence: 1.00
+    evidence: {start: 0, end: 0, hash: "unknown"}
+    why: "Inject correlation IDs in logs. [STATUS: RESOLVED]"
+    fix: "Added logging correlation IDs."
+    source: verify-review
+    resolved: true
+
+  - cat: convention
+    group: runtime
+    rule_ref: gp-27
+    severity: MED
+    confidence: 1.00
+    evidence: {start: 0, end: 0, hash: "unknown"}
+    why: "Replace raw Error with NotFoundError. [STATUS: RESOLVED]"
+    fix: "Used domain specific error."
+    source: verify-review
+    resolved: true
+
+dead_code: []
+modularity: []
+open_questions: []
+meta: {analyzer: "Antigravity", reused: false, analyzed_at: "2026-09-29T23:25:00.000Z", passes_run: [0, 1, 2, 3, 4, 5], verify_count: 1}
+---

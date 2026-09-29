@@ -3,11 +3,11 @@ last_updated: 2026-09-29T05:54:01.000Z
 conventions_version: v16
 
 ## Summary
-total_findings: 34
-open: 24
+total_findings: 36
+open: 19
 in_progress: 0
 fixed_pending_verify: 0
-verified_fixed: 10
+verified_fixed: 17
 baselined: 0
 skipped: 0
 deferred: 0
@@ -204,13 +204,13 @@ entries:
     rule_ref: sys-rel-5
     severity: HIGH
     source: rule
-    status: open
+    status: verified_fixed
     first_seen: 2026-09-27T18:17:39.545Z
-    approved_at: null
-    applied_at: null
-    verified_at: null
-    approach: null
-    commit: null
+    approved_at: 2026-09-29T23:20:00.000Z
+    applied_at: 2026-09-29T23:20:00.000Z
+    verified_at: 2026-09-29T23:25:00.000Z
+    approach: A
+    commit: 4decb7d
     notes: null
   - id: .audit/cards/apps_api_src_pipeline_stage-evaluate.ts.card.yml:1
     card: .audit/cards/apps_api_src_pipeline_stage-evaluate.ts.card.yml
@@ -218,13 +218,13 @@ entries:
     rule_ref: sys-rel-6
     severity: CRITICAL
     source: rule
-    status: open
+    status: verified_fixed
     first_seen: 2026-09-27T18:17:39.545Z
-    approved_at: null
-    applied_at: null
-    verified_at: null
-    approach: null
-    commit: null
+    approved_at: 2026-09-29T23:20:00.000Z
+    applied_at: 2026-09-29T23:20:00.000Z
+    verified_at: 2026-09-29T23:25:00.000Z
+    approach: A
+    commit: 4decb7d
     notes: null
   - id: .audit/cards/apps_api_src_pipeline_stage-evaluate.ts.card.yml:2
     card: .audit/cards/apps_api_src_pipeline_stage-evaluate.ts.card.yml
@@ -232,13 +232,13 @@ entries:
     rule_ref: eff-1a
     severity: HIGH
     source: rule
-    status: open
+    status: verified_fixed
     first_seen: 2026-09-27T18:17:39.545Z
-    approved_at: null
-    applied_at: null
-    verified_at: null
-    approach: null
-    commit: null
+    approved_at: 2026-09-29T23:20:00.000Z
+    applied_at: 2026-09-29T23:20:00.000Z
+    verified_at: 2026-09-29T23:25:00.000Z
+    approach: A
+    commit: 4decb7d
     notes: null
   - id: .audit/cards/apps_api_src_pipeline_stage-evaluate.ts.card.yml:3
     card: .audit/cards/apps_api_src_pipeline_stage-evaluate.ts.card.yml
@@ -246,13 +246,13 @@ entries:
     rule_ref: pip-2
     severity: CRITICAL
     source: rule
-    status: open
+    status: verified_fixed
     first_seen: 2026-09-27T18:17:39.545Z
-    approved_at: null
-    applied_at: null
-    verified_at: null
-    approach: null
-    commit: null
+    approved_at: 2026-09-29T23:20:00.000Z
+    applied_at: 2026-09-29T23:20:00.000Z
+    verified_at: 2026-09-29T23:25:00.000Z
+    approach: A
+    commit: 4decb7d
     notes: null
   - id: .audit/cards/apps_api_src_pipeline_stage-evaluate.ts.card.yml:new-1
     card: .audit/cards/apps_api_src_pipeline_stage-evaluate.ts.card.yml
@@ -260,13 +260,13 @@ entries:
     rule_ref: gp-18
     severity: MED
     source: verify-review
-    status: open
+    status: verified_fixed
     first_seen: 2026-09-29T22:00:00.000Z
-    approved_at: null
-    applied_at: null
-    verified_at: null
-    approach: null
-    commit: null
+    approved_at: 2026-09-29T23:20:00.000Z
+    applied_at: 2026-09-29T23:20:00.000Z
+    verified_at: 2026-09-29T23:25:00.000Z
+    approach: A
+    commit: 4decb7d
     notes: null
   - id: .audit/cards/apps_api_src_pipeline_stage-extract.ts.card.yml:0
     card: .audit/cards/apps_api_src_pipeline_stage-extract.ts.card.yml
@@ -506,4 +506,32 @@ entries:
     verified_at: 2026-09-28T18:31:30.912Z
     approach: A
     commit: null
+    notes: null
+  - id: .audit/cards/apps_api_src_pipeline_stage-evaluate.ts.card.yml:new-2
+    card: .audit/cards/apps_api_src_pipeline_stage-evaluate.ts.card.yml
+    file: apps/api/src/pipeline/stage-evaluate.ts
+    rule_ref: gp-14
+    severity: HIGH
+    source: verify-review
+    status: verified_fixed
+    first_seen: 2026-09-29T23:20:00.000Z
+    approved_at: 2026-09-29T23:20:00.000Z
+    applied_at: 2026-09-29T23:20:00.000Z
+    verified_at: 2026-09-29T23:25:00.000Z
+    approach: A
+    commit: 4decb7d
+    notes: null
+  - id: .audit/cards/apps_api_src_pipeline_stage-evaluate.ts.card.yml:new-3
+    card: .audit/cards/apps_api_src_pipeline_stage-evaluate.ts.card.yml
+    file: apps/api/src/pipeline/stage-evaluate.ts
+    rule_ref: gp-27
+    severity: MED
+    source: verify-review
+    status: verified_fixed
+    first_seen: 2026-09-29T23:20:00.000Z
+    approved_at: 2026-09-29T23:20:00.000Z
+    applied_at: 2026-09-29T23:20:00.000Z
+    verified_at: 2026-09-29T23:25:00.000Z
+    approach: A
+    commit: 4decb7d
     notes: null

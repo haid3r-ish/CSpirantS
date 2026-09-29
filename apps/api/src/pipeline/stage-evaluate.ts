@@ -2,8 +2,29 @@ import { prisma } from '@repo/db';
 import { createLlmProvider } from '@repo/llm-core';
 import type { LlmConfig, LlmEvaluationItem, PipelineRunStats } from '@repo/types';
 import { config } from '../core/config.js';
+import { NotFoundError } from '../core/errors.js';
+
+const EVALUATE_TIMEOUT_MS = 5 * 60 * 1000;
 
 export async function runEvaluateStage(pipelineRunId: string): Promise<PipelineRunStats> {
+  let timer: NodeJS.Timeout;
+  const timeoutPromise = new Promise<never>((_, reject) => {
+    timer = setTimeout(() => {
+      reject(new Error(`[Evaluate] Stage timed out after ${EVALUATE_TIMEOUT_MS}ms for run ${pipelineRunId}`));
+    }, EVALUATE_TIMEOUT_MS);
+  });
+
+  try {
+    return await Promise.race([
+      timeoutPromise,
+      _runEvaluateStageLogic(pipelineRunId)
+    ]);
+  } finally {
+    clearTimeout(timer!);
+  }
+}
+
+async function _runEvaluateStageLogic(pipelineRunId: string): Promise<PipelineRunStats> {
   const articles = await prisma.article.findMany({
     where: { pipelineRunId, status: 'DISCOVERED' },
     include: { source: true },
@@ -14,16 +35,17 @@ export async function runEvaluateStage(pipelineRunId: string): Promise<PipelineR
   });
 
   if (!pipelineRun) {
-    throw new Error(`Pipeline run ${pipelineRunId} not found`);
+    throw new NotFoundError(`Pipeline run ${pipelineRunId} not found`);
   }
 
-  const stats = (pipelineRun.stats as unknown as PipelineRunStats) || {
-    discovered: 0,
-    approved: 0,
-    rejected: 0,
-    deduplicated: 0,
-    extracted: 0,
-    failed: 0,
+  const dbStats = (pipelineRun.stats as any) || {};
+  const stats: PipelineRunStats = {
+    discovered: dbStats.discovered || 0,
+    approved: dbStats.approved || 0,
+    rejected: dbStats.rejected || 0,
+    deduplicated: dbStats.deduplicated || 0,
+    extracted: dbStats.extracted || 0,
+    failed: dbStats.failed || 0,
   };
 
   if (articles.length === 0) {
@@ -115,8 +137,9 @@ export async function runEvaluateStage(pipelineRunId: string): Promise<PipelineR
   // --- Process Deduplication ---
   let deduplicatedCount = 0;
   if (config.DEDUPE_ENABLED && result.duplicateGroups && result.duplicateGroups.length > 0) {
-    try {
-      for (const group of result.duplicateGroups) {
+    const txUpdates: any[] = [];
+    for (const group of result.duplicateGroups) {
+      try {
         // Guard: canonical must be approved
         if (!result.approvedHashes.includes(group.canonical)) continue;
 
@@ -132,19 +155,19 @@ export async function runEvaluateStage(pipelineRunId: string): Promise<PipelineR
 
           const dupGroup = dupArticle.source.dedupeGroup || 'default';
           if (dupGroup !== canonicalGroup) {
-            console.warn(`[Pipeline] Cross-group dedup rejected: ${canonicalGroup} != ${dupGroup} for hashes ${group.canonical} & ${dupHash}`);
+            console.warn(`[Evaluate][Run:${pipelineRunId}] Cross-group dedup rejected: ${canonicalGroup} != ${dupGroup} for hashes ${group.canonical} & ${dupHash}`);
             continue;
           }
 
           // Same group, mark as DEDUPLICATED
-          await prisma.article.update({
+          txUpdates.push(prisma.article.update({
             where: { id: dupArticle.id },
             data: {
               status: 'DEDUPLICATED',
               canonicalArticleId: canonicalArticle.id,
               fullContent: null, // clear content to save space as it's a ghost article
             },
-          });
+          }));
           validDuplicates.push(dupArticle);
           deduplicatedCount++;
         }
@@ -161,28 +184,52 @@ export async function runEvaluateStage(pipelineRunId: string): Promise<PipelineR
             currentAlsoCoveredBy = canonicalArticle.alsoCoveredBy;
           }
           
-          await prisma.article.update({
+          txUpdates.push(prisma.article.update({
             where: { id: canonicalArticle.id },
             data: {
               alsoCoveredBy: [...currentAlsoCoveredBy, ...newEntries],
             },
-          });
+          }));
         }
+      } catch (err) {
+        console.error(`[Evaluate][Run:${pipelineRunId}] Error during deduplication logic for batch ${batch.id}:`, err);
+        // We don't throw - let the pipeline continue
       }
-    } catch (err) {
-      console.error(`[Pipeline] Error during deduplication logic for batch ${batch.id}:`, err);
-      // We don't throw - let the pipeline continue
+    }
+    
+    if (txUpdates.length > 0) {
+      await prisma.$transaction(txUpdates);
     }
   }
 
-  stats.approved = (stats.approved || 0) + result.approvedHashes.length - deduplicatedCount;
-  stats.rejected = (stats.rejected || 0) + rejectedHashes.length;
-  stats.deduplicated = (stats.deduplicated || 0) + deduplicatedCount;
+  const approvedDelta = result.approvedHashes.length - deduplicatedCount;
+  const rejectedDelta = rejectedHashes.length;
+  const deduplicatedDelta = deduplicatedCount;
 
-  await prisma.pipelineRun.update({
-    where: { id: pipelineRunId },
-    data: { stats: stats as any },
+  let finalStats = stats;
+  await prisma.$transaction(async (tx) => {
+    const currentRun = await tx.pipelineRun.findUnique({
+      where: { id: pipelineRunId },
+      select: { stats: true },
+    });
+    
+    if (currentRun) {
+      const dbStats = (currentRun.stats as any) || {};
+      finalStats = {
+        discovered: dbStats.discovered || 0,
+        approved: (dbStats.approved || 0) + approvedDelta,
+        rejected: (dbStats.rejected || 0) + rejectedDelta,
+        deduplicated: (dbStats.deduplicated || 0) + deduplicatedDelta,
+        extracted: dbStats.extracted || 0,
+        failed: dbStats.failed || 0,
+      };
+      
+      await tx.pipelineRun.update({
+        where: { id: pipelineRunId },
+        data: { stats: finalStats as any },
+      });
+    }
   });
 
-  return stats;
+  return finalStats;
 }

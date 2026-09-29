@@ -337,6 +337,7 @@ When a task is completed, you MUST update this file in **TWO** locations:
 | Audit-1 | apps_api_src_modules_auth_auth.routes.ts | 2026-09-28 | Handled `sys-rel-1` (false positive; timeout present), `sec-2` (false positive; logs user.id), and fixed `gp-7` (wrapped Google OAuth fetch in try/catch via wrapError utility) |
 | Audit-2 | apps_api_src_pipeline_orchestrator.ts | 2026-09-28 | Fixed `sys-rel-2` (missing BullMQ retry config; added defaultJobOpts) and `gp-23` (sequential discoverQueue.add replaced with addBulk) |
 | Audit-3 | apps_api_src_pipeline_stage-discover.ts | 2026-09-29 | Fixed `sys-rel-5` (stage timeout budget wrapper), `eff-1a` (bulk article creation), `pip-2` (atomic stats update), `gp-14` (correlation IDs in logs), and `gp-27` (domain-specific typed errors) |
+| Audit-4 | apps_api_src_pipeline_stage-evaluate.ts | 2026-09-29 | Fixed `sys-rel-5` (stage timeout), `sys-rel-6` (batch failure isolation), `eff-1a` (bulk updateMany), `pip-2` (atomic stats updates), `gp-18` (Zod validation for stats), `gp-14` (correlation IDs in logs), and `gp-27` (typed domain errors) |
 
 ### Audit File Registry
 
@@ -345,14 +346,16 @@ When a task is completed, you MUST update this file in **TWO** locations:
 | apps/api/src/modules/auth/auth.routes.ts | .audit/cards/apps_api_src_modules_auth_auth.routes.ts.card.yml | Wrapped fetch in try/catch with typed error, verified timeout and log safety | Modified |
 | apps/api/src/pipeline/orchestrator.ts | .audit/cards/apps_api_src_pipeline_orchestrator.ts.card.yml | Added defaultJobOpts (attempts/backoff) to flow jobs and replaced loop with discoverQueue.addBulk | Modified |
 | apps/api/src/pipeline/stage-discover.ts | .audit/cards/apps_api_src_pipeline_stage-discover.ts.card.yml | Wrapped execution in timeout budget, atomized stats update, added correlation IDs and typed errors | Modified |
+| apps/api/src/pipeline/stage-evaluate.ts | .audit/cards/apps_api_src_pipeline_stage-evaluate.ts.card.yml | Wrapped in timeout, isolated DB dedupe failures, batched DB updates, atomized stats, added Zod validation, correlation IDs, and typed errors | Modified |
 
 ### Audit Git Commit Registry
 
 | Task ID | Card | Commit Message | Push Status |
 |---------|------|----------------|-------------|
-| Audit-1 | apps_api_src_modules_auth_auth.routes.ts | `feat(task-1-1a.2): add wrapError utility for modular Promise rejection mapping` | ⏳ Pending |
-| Audit-2 | apps_api_src_pipeline_orchestrator.ts | `audit: Fix sys-rel-2, gp-23 in orchestrator.ts` | ⏳ Pending |
-| Audit-3 | apps_api_src_pipeline_stage-discover.ts | `audit: Fix sys-rel-5, eff-1a, pip-2, gp-14, gp-27 in stage-discover.ts` | ⏳ Pending |
+| Audit-1 | apps_api_src_modules_auth_auth.routes.ts | `feat(task-1-1a.2): add wrapError utility for modular Promise rejection mapping` | ✅ Pushed |
+| Audit-2 | apps_api_src_pipeline_orchestrator.ts | `audit: Fix sys-rel-2, gp-23 in orchestrator.ts` | ✅ Pushed |
+| Audit-3 | apps_api_src_pipeline_stage-discover.ts | `audit: Fix sys-rel-5, eff-1a, pip-2, gp-14, gp-27 in stage-discover.ts` | ✅ Pushed |
+| Audit-4 | apps_api_src_pipeline_stage-evaluate.ts | `audit: Fix evaluate stage issues and verify card` | ✅ Pushed |
 
 ---
 
@@ -628,3 +631,7 @@ Notes: Fixed sys-rel-2 by attaching defaultJobOpts (attempts: 3, exponential bac
 Task Audit-3: Pipeline Stage-Discover Audit Fixes — COMPLETED 2026-09-29T11:00:00Z
 Files: apps/api/src/pipeline/stage-discover.ts, .audit/cards/apps_api_src_pipeline_stage-discover.ts.card.yml, .audit/fix-ledger.md
 Notes: Fixed sys-rel-5 (runtime timeout budget wrapper), eff-1a (batched article creation), pip-2 (atomic PipelineRun.stats updates), gp-14 (structured correlation IDs in log messages), and gp-27 (typed domain errors).
+
+Task Audit-4: Pipeline Stage-Evaluate Audit Fixes — COMPLETED 2026-09-29T23:25:00Z
+Files: apps/api/src/pipeline/stage-evaluate.ts, .audit/cards/apps_api_src_pipeline_stage-evaluate.ts.card.yml, .audit/fix-ledger.md
+Notes: Fixed sys-rel-5, sys-rel-6, eff-1a, pip-2, gp-18, gp-14, and gp-27.
