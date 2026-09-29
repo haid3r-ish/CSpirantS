@@ -151,6 +151,7 @@ When a task is completed, you MUST update this file in **TWO** locations:
 | 9-8 | Fix Timezone Shift in LLM Prompt | `fix(task-9-8): Preserve local timezone in LLM prompt formatting` | ✅ Pushed |
 | 9-9 | Add missing sourceIds to Scheduled PipelineRun | `fix(task-9-9): add missing sourceIds payload to slot scheduler pipeline creation` | ✅ Pushed |
 | 1-1a.2 | wrapError Promise Rejection Utility | `feat(task-1-1a.2): add wrapError utility for modular Promise rejection mapping` | ⏳ Pending |
+| 1-1a.3 | Add Typed Error Classes | `feat(task-1-1a.3): add typed error classes for pipeline stages` | ⏳ Pending |
 
 ---
 
@@ -289,6 +290,7 @@ When a task is completed, you MUST update this file in **TWO** locations:
 | apps/api/src/modules/scraper/source.routes.ts | Modified | 9-4 |
 | apps/api/src/core/errors.ts | Modified | 1-1a.2 |
 | apps/api/src/modules/auth/auth.routes.ts | Modified | 1-1a.2 |
+| apps/api/src/core/errors.ts | Modified | 1-1a.3 |
 ---
 
 ## Architecture Decisions Log
@@ -518,7 +520,7 @@ Files: apps/api/src/core/errors.ts (created), error-handler.ts (modified), serve
 Notes: Centralized error handling. Removed try/catch anti-pattern from all route files. Added NotFoundHandler and AppError hierarchy.
   - *Sub-task 1-1a.1 (Service & Auth Patch)*: Updated `auth.middleware.ts`, `auth.routes.ts`, `pipeline.service.ts`, and `llm-batch.service.ts` to replace manual `reply.status(401)` and generic `throw new Error()` calls with specific `AppError` subclasses.
   - *Sub-task 1-1a.2 (wrapError Promise Rejection Utility)*: Implemented `wrapError` in `apps/api/src/core/errors.ts` to cleanly handle asynchronous operations and translate Promise rejections into domain `AppError`s without verbose local try/catch blocks. Integrated into `auth.routes.ts` Google userinfo fetch.
-  - *Sub-task 1-1a.3 (Add Typed Error Classes)*: Added `InternalServerError` and `ValidationError` to `apps/api/src/core/errors.ts` to support pipeline stage typed error handling.
+  - *Sub-task 1-1a.3 (Add Typed Error Classes)*: Added `InternalServerError` and `ValidationError` to `apps/api/src/core/errors.ts` to support specific domain failures in pipeline stages.
 
 Task 2-3c: Dawn Parser Date Guard — COMPLETED 2026-09-25T14:38:00Z
 Files: packages/scraper-core/src/parsers/errors.ts (created), base.parser.ts (modified), dawn.parser.ts (modified), scraper-core/src/index.ts (modified), apps/api/src/pipeline/stage-discover.ts (modified)
