@@ -1,0 +1,23 @@
+---
+file: apps/api/src/pipeline/stage-discover.ts
+hash: 9e133633
+purpose_1line: Executes the DISCOVER stage of the scraping pipeline.
+status: clean
+
+# Note: plain.does = non-tech, plain English. purpose_1line = dense, for tech readers. They must not be identical.
+plain:
+  does: Visits the homepage of a news site, finds all the links to new articles, and saves them to the database to be checked later.
+  risks: []
+
+imports: []
+
+api:
+  - {sym: "runDiscoverStage", kind: "fn", purpose: "Orchestrate discovery for a source", side_effects: "net,db"}
+
+findings: []
+
+dead_code: []
+modularity: []
+open_questions: []
+meta: {analyzer: "Antigravity", reused: false, analyzed_at: "2026-09-29T05:54:01.000Z", passes_run: [0, 1, 2, 3, 4, 5], verify_count: 1}
+---
