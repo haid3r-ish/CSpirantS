@@ -151,7 +151,8 @@ When a task is completed, you MUST update this file in **TWO** locations:
 | 9-8 | Fix Timezone Shift in LLM Prompt | `fix(task-9-8): Preserve local timezone in LLM prompt formatting` | ✅ Pushed |
 | 9-9 | Add missing sourceIds to Scheduled PipelineRun | `fix(task-9-9): add missing sourceIds payload to slot scheduler pipeline creation` | ✅ Pushed |
 | 1-1a.2 | wrapError Promise Rejection Utility | `feat(task-1-1a.2): add wrapError utility for modular Promise rejection mapping` | ⏳ Pending |
-| 1-1a.3 | Add Typed Error Classes | `feat(task-1-1a.3): add typed error classes for pipeline stages` | ⏳ Pending |
+| 1-1a.3 | Add Typed Error Classes | `feat(task-1-1a.3): add typed error classes for pipeline stages` | ✅ Pushed |
+| Audit-5 | Pipeline Stage-Extract Audit Fixes | `fix(audit-5): apply fixes for stage-extract` | ⏳ Pending |
 
 ---
 

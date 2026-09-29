@@ -535,3 +535,45 @@ entries:
     approach: A
     commit: 4decb7d
     notes: null
+  - id: .audit/cards/apps_api_src_pipeline_stage-extract.ts.card.yml:0
+    card: .audit/cards/apps_api_src_pipeline_stage-extract.ts.card.yml
+    file: apps/api/src/pipeline/stage-extract.ts
+    rule_ref: sys-rel-5
+    severity: HIGH
+    source: rule
+    status: verified_fixed
+    first_seen: 2026-09-27T18:18:46.319Z
+    approved_at: 2026-09-29T23:44:00.000Z
+    applied_at: 2026-09-29T23:44:00.000Z
+    verified_at: 2026-09-30T00:05:00.000Z
+    approach: A
+    commit: null
+    notes: null
+  - id: .audit/cards/apps_api_src_pipeline_stage-extract.ts.card.yml:1
+    card: .audit/cards/apps_api_src_pipeline_stage-extract.ts.card.yml
+    file: apps/api/src/pipeline/stage-extract.ts
+    rule_ref: eff-1a
+    severity: HIGH
+    source: rule
+    status: verified_fixed
+    first_seen: 2026-09-27T18:18:46.319Z
+    approved_at: 2026-09-29T23:44:00.000Z
+    applied_at: 2026-09-29T23:44:00.000Z
+    verified_at: 2026-09-30T00:05:00.000Z
+    approach: A
+    commit: null
+    notes: null
+  - id: .audit/cards/apps_api_src_pipeline_stage-extract.ts.card.yml:2
+    card: .audit/cards/apps_api_src_pipeline_stage-extract.ts.card.yml
+    file: apps/api/src/pipeline/stage-extract.ts
+    rule_ref: pip-2
+    severity: CRITICAL
+    source: rule
+    status: verified_fixed
+    first_seen: 2026-09-27T18:18:46.319Z
+    approved_at: 2026-09-29T23:44:00.000Z
+    applied_at: 2026-09-29T23:44:00.000Z
+    verified_at: 2026-09-30T00:05:00.000Z
+    approach: A
+    commit: null
+    notes: null

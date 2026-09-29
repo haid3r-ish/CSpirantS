@@ -1,0 +1,57 @@
+---
+file: apps/api/src/pipeline/stage-extract.ts
+hash: 0e02bb5c
+purpose_1line: Executes the EXTRACT stage of the scraping pipeline.
+status: clean
+
+# Note: plain.does = non-tech, plain English. purpose_1line = dense, for tech readers. They must not be identical.
+plain:
+  does: Downloads the full text of approved articles, cleans them up, counts the words, and saves the final content for the database.
+  risks: []
+
+imports: []
+
+api:
+  - {sym: "runExtractStage", kind: "fn", purpose: "Execute extraction on approved articles", side_effects: "db,net"}
+
+findings: []
+
+previous_findings:
+  - cat: convention
+    group: runtime
+    rule_ref: sys-rel-5
+    severity: HIGH
+    confidence: 1.00
+    evidence: {start: 8, end: 9, hash: "9379c001"}
+    why: "The runExtractStage function lacks a maximum runtime budget wrapper."
+    fix: "Wrap the stage execution in a timeout to prevent infinite hangs."
+    failure_mode: "Worker process hangs indefinitely, blocking queue consumption."
+    blast_radius: system
+
+  - cat: convention
+    group: resource
+    rule_ref: eff-1a
+    severity: HIGH
+    confidence: 1.00
+    evidence: {start: 38, end: 43, hash: "5bc99c8a"}
+    why: "Executes prisma.article.update multiple times per item sequentially inside a loop (EXTRACTING and EXTRACTED states)."
+    fix: "Use bulk status updates via updateMany or accumulate results for chunked transactions."
+    failure_mode: "Database connection pool exhaustion and high latency during large batches."
+    blast_radius: stage
+
+  - cat: convention
+    group: domain
+    rule_ref: pip-2
+    severity: CRITICAL
+    confidence: 1.00
+    evidence: {start: 101, end: 108, hash: "62faab24"}
+    why: "Non-atomic read-modify-write of PipelineRun.stats."
+    fix: "Use atomic JSON updates or an explicit transaction with pessimistic locking."
+    failure_mode: "Concurrent workers overwrite each other's stats, leading to inaccurate progress tracking."
+    blast_radius: system
+
+dead_code: []
+modularity: []
+open_questions: []
+meta: {analyzer: "Antigravity", reused: false, analyzed_at: "2026-09-30T00:05:00.000Z", last_fix_at: "2026-09-29T23:45:00.000Z", passes_run: [0, 1, 2, 3, 4, 5], verify_count: 1}
+---
