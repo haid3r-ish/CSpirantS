@@ -73,6 +73,7 @@ When a task is completed, you MUST update this file in **TWO** locations:
 | 4-3 | Stage 3 — Extract Worker | 2026-09-10 | apps/api/src/pipeline/stage-extract.ts, extract.worker.ts |
 | 4-3a | Stage 3 Extract — Code-First Parser Integration | 2026-09-19 | apps/api/src/pipeline/stage-extract.ts |
 | 4-3b | Fix PipelineRun Status Stuck in RUNNING | 2026-09-23 | apps/api/src/pipeline/stage-extract.ts |
+| 4-3c | Extract Stage — Graceful Empty Completion | 2026-09-30 | apps/api/src/pipeline/stage-extract.ts |
 | 4-4 | Maintenance Worker & Cron Schedulers | 2026-09-10 | apps/api/src/queue/schedulers.ts, apps/api/src/pipeline/workers/maintenance.worker.ts |
 | 5-1 | Pipeline Trigger & Status API | 2026-09-22 | apps/api/src/modules/pipeline/pipeline.* |
 | 5-1a | Patch: Fix Pipeline Trigger API | 2026-09-22 | apps/api/src/modules/pipeline/pipeline.service.ts |
@@ -156,6 +157,7 @@ When a task is completed, you MUST update this file in **TWO** locations:
 | 1-1a.3 | Add Typed Error Classes | `feat(task-1-1a.3): add typed error classes for pipeline stages` | ✅ Pushed |
 | Audit-5 | Pipeline Stage-Extract Audit Fixes | `fix(audit-5): apply fixes for stage-extract` | ⏳ Pending |
 | Audit-6 | Packages DB Index Audit Verification | `fix(audit-6): verify packages_db_src_index.ts card and resolve cfg-1 as false positive` | ⏳ Pending |
+| 4-3c | Extract Stage — Graceful Empty Completion | `fix(task-4-3c): complete pipeline run when zero articles found in extract stage` | ⏳ Pending |
 
 ---
 
@@ -249,6 +251,7 @@ When a task is completed, you MUST update this file in **TWO** locations:
 | apps/api/src/pipeline/workers/extract.worker.ts | Created | 4-3 |
 | apps/api/src/pipeline/stage-extract.ts | Modified | 4-3a |
 | apps/api/src/pipeline/stage-extract.ts | Modified | 4-3b |
+| apps/api/src/pipeline/stage-extract.ts | Modified | 4-3c |
 | apps/api/src/queue/schedulers.ts | Created | 4-4 |
 | apps/api/src/pipeline/workers/maintenance.worker.ts | Created | 4-4 |
 | apps/api/src/modules/pipeline/pipeline.routes.ts | Created | 5-1 |
@@ -656,3 +659,7 @@ Notes: Fixed sys-rel-5, eff-1a, pip-2, gp-14, gp-18, and gp-27.
 Task Audit-6: Packages DB Index Audit Verification — COMPLETED 2026-09-30T00:18:00Z
 Files: packages/db/src/index.ts, .audit/cards/packages_db_src_index.ts.card.yml, .audit/fix-ledger.md
 Notes: Triaged cfg-1 finding (process.env usage). Confirmed as false positive due to architectural boundary of shared monorepo package (@repo/db cannot import apps/api config without circular dependencies, and safely parses NODE_ENV with Zod). Card verified clean and marked skipped in fix-ledger.
+
+Task 4-3c: Extract Stage — Graceful Empty Completion — COMPLETED 2026-09-30T17:48:00Z
+Files: apps/api/src/pipeline/stage-extract.ts
+Notes: Fixed critical bug where the pipeline would get permanently stuck in RUNNING status if zero articles were found during the discovery stage. Added early return logic to update PipelineRun.status to COMPLETED.

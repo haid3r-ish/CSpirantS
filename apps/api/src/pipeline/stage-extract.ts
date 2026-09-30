@@ -33,6 +33,15 @@ async function executeExtractStage(pipelineRunId: string): Promise<PipelineRunSt
     if (!pipelineRun) {
       throw new NotFoundError(`Pipeline run ${pipelineRunId} not found`);
     }
+
+    await prisma.pipelineRun.update({
+      where: { id: pipelineRunId },
+      data: {
+        status: 'COMPLETED',
+        completedAt: new Date()
+      }
+    });
+
     const stats = pipelineRun.stats as unknown as PipelineRunStats || { discovered: 0, approved: 0, rejected: 0, extracted: 0, failed: 0 };
     return stats;
   }
