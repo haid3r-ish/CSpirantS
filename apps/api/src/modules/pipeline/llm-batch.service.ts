@@ -49,7 +49,21 @@ export async function getBatchPrompt(id: string) {
   return batch;
 }
 
-export async function resolveBatch(id: string, approvedHashes: string[]) {
+export async function resolveBatch(id: string, payload: { rawResponse?: string; approvedHashes?: string[] }) {
+  const { parseEvaluationResponse } = await import('@repo/llm-core');
+  const { config } = await import('../../core/config.js');
+
+  let approvedHashes: string[] = [];
+  let duplicateGroups: { canonical: string; duplicates: string[] }[] = [];
+
+  if (payload.rawResponse) {
+    const parsed = parseEvaluationResponse(payload.rawResponse);
+    approvedHashes = parsed.approvedHashes;
+    duplicateGroups = parsed.duplicateGroups;
+  } else if (payload.approvedHashes) {
+    approvedHashes = payload.approvedHashes;
+  }
+
   // Validate hashes regex
   const validHashRegex = /^[a-f0-9]{16}$/i;
   for (const hash of approvedHashes) {
@@ -96,14 +110,74 @@ export async function resolveBatch(id: string, approvedHashes: string[]) {
       data: { status: 'REJECTED' }
     });
 
-    // Update Run to RUNNING/EXTRACT
-    await tx.pipelineRun.update({
-      where: { id: batch.pipelineRunId },
-      data: {
-        status: 'RUNNING',
-        currentStage: 'EXTRACT'
+    // --- Deduplication Logic for Manual Mode ---
+    let deduplicatedCount = 0;
+    if (config.DEDUPE_ENABLED && duplicateGroups && duplicateGroups.length > 0) {
+      const articles = await tx.article.findMany({
+        where: { pipelineRunId: batch.pipelineRunId, hash: { in: [...approvedHashes, ...duplicateGroups.flatMap(g => g.duplicates)] } },
+        include: { source: true },
+      });
+
+      for (const group of duplicateGroups) {
+        if (!approvedHashes.includes(group.canonical)) continue;
+
+        const canonicalArticle = articles.find((a: any) => a.hash === group.canonical);
+        if (!canonicalArticle) continue;
+
+        const canonicalGroup = canonicalArticle.source.dedupeGroup || 'default';
+        const validDuplicates = [];
+
+        for (const dupHash of group.duplicates) {
+          const dupArticle = articles.find((a: any) => a.hash === dupHash);
+          if (!dupArticle) continue;
+
+          const dupGroup = dupArticle.source.dedupeGroup || 'default';
+          if (dupGroup !== canonicalGroup) continue;
+
+          await tx.article.update({
+            where: { id: dupArticle.id },
+            data: {
+              status: 'DEDUPLICATED',
+              canonicalArticleId: canonicalArticle.id,
+              fullContent: null,
+              description: null,
+            },
+          });
+          validDuplicates.push(dupArticle);
+          deduplicatedCount++;
+        }
+
+        if (validDuplicates.length > 0) {
+          const newEntries = validDuplicates.map(d => ({ source: d.source.name, url: d.url }));
+          let currentAlsoCoveredBy: any[] = [];
+          if (canonicalArticle.alsoCoveredBy && Array.isArray(canonicalArticle.alsoCoveredBy)) {
+            currentAlsoCoveredBy = canonicalArticle.alsoCoveredBy;
+          }
+          await tx.article.update({
+            where: { id: canonicalArticle.id },
+            data: { alsoCoveredBy: [...currentAlsoCoveredBy, ...newEntries] },
+          });
+        }
       }
-    });
+    }
+
+    // Update Run to RUNNING/EXTRACT
+    const currentRun = await tx.pipelineRun.findUnique({ where: { id: batch.pipelineRunId } });
+    if (currentRun) {
+      const stats = (currentRun.stats as any) || {};
+      stats.approved = (stats.approved || 0) + approvedHashes.length - deduplicatedCount;
+      stats.deduplicated = (stats.deduplicated || 0) + deduplicatedCount;
+      // Note: rejected is updated roughly in Evaluate Stage. Manual resolution is tricky for precise counting without full items list.
+
+      await tx.pipelineRun.update({
+        where: { id: batch.pipelineRunId },
+        data: {
+          status: 'RUNNING',
+          currentStage: 'EXTRACT',
+          stats
+        }
+      });
+    }
 
     // Enqueue stage-extract
     await extractQueue.add('stage-extract', { pipelineRunId: batch.pipelineRunId });

@@ -95,6 +95,7 @@ When a task is completed, you MUST update this file in **TWO** locations:
 | 4-5c | Slot Lock — Redis NX Lock | 2026-09-26 | apps/api/src/queue/slot-lock.ts |
 | 9-2 | LLM Prompt — Add Dedup Response to Evaluate | 2026-09-26 | packages/types, packages/llm-core |
 | 9-3 | Evaluate Stage — Process LLM Dedup Groups | 2026-09-26 | apps/api/src/pipeline/stage-evaluate.ts |
+| 9-3a | Dedupe Bloat Fix — Null ghost descriptions | 2026-09-30 | apps/api/src/pipeline/stage-evaluate.ts, apps/api/src/modules/pipeline/llm-batch.service.ts |
 | 4-5d | Slot Scheduler Logic | 2026-09-26 | apps/api/src/pipeline/slot-scheduler.ts |
 | 4-5e | Schedulers — Wire 4 Cron Slots | 2026-09-26 | apps/api/src/queue/schedulers.ts, apps/api/src/pipeline/workers/maintenance.worker.ts |
 | 9-4 | Articles API — Canonical Content Serving | 2026-09-27 | apps/api/src/modules/articles/articles.service.ts, apps/api/src/modules/scraper/source.routes.ts |
@@ -160,6 +161,7 @@ When a task is completed, you MUST update this file in **TWO** locations:
 | Audit-6 | Packages DB Index Audit Verification | `fix(audit-6): verify packages_db_src_index.ts card and resolve cfg-1 as false positive` | ⏳ Pending |
 | 4-3c | Extract Stage — Graceful Empty Completion | `fix(task-4-3c): complete pipeline run when zero articles found in extract stage` | ⏳ Pending |
 | 4-2a | Evaluate Stage — Pipeline Stage Transitions | `feat(task-4-2a): track currentStage transition to EXTRACT in stage-evaluate` | ⏳ Pending |
+| 9-3a | Dedupe Bloat Fix — Null ghost descriptions | `fix(task-9-3a): null description on duplicate articles to prevent database bloat` | ⏳ Pending |
 
 ---
 
@@ -293,6 +295,9 @@ When a task is completed, you MUST update this file in **TWO** locations:
 | packages/llm-core/src/providers/base.provider.ts | Modified | 9-2 |
 | apps/api/src/pipeline/stage-evaluate.ts | Modified | 9-3 |
 | packages/types/src/pipeline.types.ts | Modified | 9-3 |
+| apps/api/src/pipeline/stage-evaluate.ts | Modified | 9-3a |
+| apps/api/src/modules/pipeline/llm-batch.service.ts | Modified | 9-3a |
+| apps/api/src/modules/pipeline/llm-batch.routes.ts | Modified | 9-3a |
 | apps/api/src/pipeline/slot-scheduler.ts | Created | 4-5d |
 | apps/api/src/queue/schedulers.ts | Modified | 4-5e |
 | apps/api/src/pipeline/workers/maintenance.worker.ts | Modified | 4-5e |
@@ -670,3 +675,7 @@ Notes: Fixed critical bug where the pipeline would get permanently stuck in RUNN
 Task 4-2a: Evaluate Stage — Pipeline Stage Transitions — COMPLETED 2026-09-30T17:50:00Z
 Files: apps/api/src/pipeline/stage-evaluate.ts
 Notes: Fixed pipeline run monitoring by updating PipelineRun.currentStage to EXTRACT after successful API mode evaluation.
+
+Task 9-3a: Dedupe Bloat Fix — Null ghost descriptions — COMPLETED 2026-09-30T17:52:00Z
+Files: apps/api/src/pipeline/stage-evaluate.ts, apps/api/src/modules/pipeline/llm-batch.service.ts, apps/api/src/modules/pipeline/llm-batch.routes.ts
+Notes: Optimized database storage by setting description to null when marking duplicate articles as DEDUPLICATED, saving significant JSONB block storage while preserving extractedData per user request. Added support for rawResponse and dedup resolution in manual batches.

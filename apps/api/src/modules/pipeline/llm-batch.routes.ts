@@ -34,13 +34,17 @@ export async function llmBatchRoutes(server: FastifyInstance) {
   server.post('/api/pipeline/llm-batches/:id/resolve', { preHandler: [requireAuth] }, async (request, reply) => {
     const paramsSchema = z.object({ id: z.string().min(1) });
     const bodySchema = z.object({
-      approvedHashes: z.array(z.string().regex(/^[a-f0-9]{16}$/i)),
+      rawResponse: z.string().optional(),
+      approvedHashes: z.array(z.string().regex(/^[a-f0-9]{16}$/i)).optional(),
     });
 
     const params = paramsSchema.parse(request.params);
     const body = bodySchema.parse(request.body);
 
-    const batch = await llmBatchService.resolveBatch(params.id, body.approvedHashes);
+    const batch = await llmBatchService.resolveBatch(params.id, {
+      rawResponse: body.rawResponse,
+      approvedHashes: body.approvedHashes,
+    });
     return reply.send(batch);
   });
 }
