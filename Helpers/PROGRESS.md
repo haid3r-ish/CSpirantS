@@ -70,6 +70,7 @@ When a task is completed, you MUST update this file in **TWO** locations:
 | 4-1 | Stage 1 — Discover Worker | 2026-09-09 | apps/api/src/pipeline/stage-discover.ts, apps/api/src/pipeline/workers/discover.worker.ts |
 | 4-1a | Stage 1 Discover — Code-First Parser Integration | 2026-09-19 | apps/api/src/pipeline/stage-discover.ts |
 | 4-2 | Stage 2 — Evaluate Worker | 2026-09-09 | apps/api/src/pipeline/stage-evaluate.ts, apps/api/src/pipeline/workers/evaluate.worker.ts |
+| 4-2a | Evaluate Stage — Pipeline Stage Transitions | 2026-09-30 | apps/api/src/pipeline/stage-evaluate.ts |
 | 4-3 | Stage 3 — Extract Worker | 2026-09-10 | apps/api/src/pipeline/stage-extract.ts, extract.worker.ts |
 | 4-3a | Stage 3 Extract — Code-First Parser Integration | 2026-09-19 | apps/api/src/pipeline/stage-extract.ts |
 | 4-3b | Fix PipelineRun Status Stuck in RUNNING | 2026-09-23 | apps/api/src/pipeline/stage-extract.ts |
@@ -158,6 +159,7 @@ When a task is completed, you MUST update this file in **TWO** locations:
 | Audit-5 | Pipeline Stage-Extract Audit Fixes | `fix(audit-5): apply fixes for stage-extract` | ⏳ Pending |
 | Audit-6 | Packages DB Index Audit Verification | `fix(audit-6): verify packages_db_src_index.ts card and resolve cfg-1 as false positive` | ⏳ Pending |
 | 4-3c | Extract Stage — Graceful Empty Completion | `fix(task-4-3c): complete pipeline run when zero articles found in extract stage` | ⏳ Pending |
+| 4-2a | Evaluate Stage — Pipeline Stage Transitions | `feat(task-4-2a): track currentStage transition to EXTRACT in stage-evaluate` | ⏳ Pending |
 
 ---
 
@@ -247,6 +249,7 @@ When a task is completed, you MUST update this file in **TWO** locations:
 | apps/api/src/pipeline/stage-discover.ts | Modified | 4-1a |
 | apps/api/src/pipeline/stage-evaluate.ts | Created | 4-2 |
 | apps/api/src/pipeline/workers/evaluate.worker.ts | Created | 4-2 |
+| apps/api/src/pipeline/stage-evaluate.ts | Modified | 4-2a |
 | apps/api/src/pipeline/stage-extract.ts | Created | 4-3 |
 | apps/api/src/pipeline/workers/extract.worker.ts | Created | 4-3 |
 | apps/api/src/pipeline/stage-extract.ts | Modified | 4-3a |
@@ -663,3 +666,7 @@ Notes: Triaged cfg-1 finding (process.env usage). Confirmed as false positive du
 Task 4-3c: Extract Stage — Graceful Empty Completion — COMPLETED 2026-09-30T17:48:00Z
 Files: apps/api/src/pipeline/stage-extract.ts
 Notes: Fixed critical bug where the pipeline would get permanently stuck in RUNNING status if zero articles were found during the discovery stage. Added early return logic to update PipelineRun.status to COMPLETED.
+
+Task 4-2a: Evaluate Stage — Pipeline Stage Transitions — COMPLETED 2026-09-30T17:50:00Z
+Files: apps/api/src/pipeline/stage-evaluate.ts
+Notes: Fixed pipeline run monitoring by updating PipelineRun.currentStage to EXTRACT after successful API mode evaluation.

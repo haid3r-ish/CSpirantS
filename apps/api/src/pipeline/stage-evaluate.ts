@@ -166,6 +166,7 @@ async function _runEvaluateStageLogic(pipelineRunId: string): Promise<PipelineRu
               status: 'DEDUPLICATED',
               canonicalArticleId: canonicalArticle.id,
               fullContent: null, // clear content to save space as it's a ghost article
+              description: null, // also clear description to save space
             },
           }));
           validDuplicates.push(dupArticle);
@@ -178,12 +179,12 @@ async function _runEvaluateStageLogic(pipelineRunId: string): Promise<PipelineRu
             source: d.source.name,
             url: d.url,
           }));
-          
+
           let currentAlsoCoveredBy: any[] = [];
           if (canonicalArticle.alsoCoveredBy && Array.isArray(canonicalArticle.alsoCoveredBy)) {
             currentAlsoCoveredBy = canonicalArticle.alsoCoveredBy;
           }
-          
+
           txUpdates.push(prisma.article.update({
             where: { id: canonicalArticle.id },
             data: {
@@ -196,7 +197,7 @@ async function _runEvaluateStageLogic(pipelineRunId: string): Promise<PipelineRu
         // We don't throw - let the pipeline continue
       }
     }
-    
+
     if (txUpdates.length > 0) {
       await prisma.$transaction(txUpdates);
     }
@@ -212,7 +213,7 @@ async function _runEvaluateStageLogic(pipelineRunId: string): Promise<PipelineRu
       where: { id: pipelineRunId },
       select: { stats: true },
     });
-    
+
     if (currentRun) {
       const dbStats = (currentRun.stats as any) || {};
       finalStats = {
@@ -223,10 +224,13 @@ async function _runEvaluateStageLogic(pipelineRunId: string): Promise<PipelineRu
         extracted: dbStats.extracted || 0,
         failed: dbStats.failed || 0,
       };
-      
+
       await tx.pipelineRun.update({
         where: { id: pipelineRunId },
-        data: { stats: finalStats as any },
+        data: {
+          stats: finalStats as any,
+          currentStage: 'EXTRACT',
+        },
       });
     }
   });
