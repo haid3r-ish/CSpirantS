@@ -102,6 +102,8 @@ When a task is completed, you MUST update this file in **TWO** locations:
 | 9-8 | Fix Timezone Shift in LLM Prompt | 2026-09-27 | packages/llm-core/src/formatter/pipe-delimited.ts |
 | 9-9 | Add missing sourceIds to Scheduled PipelineRun | 2026-09-27 | apps/api/src/pipeline/slot-scheduler.ts |
 | 1-1a.2 | wrapError Promise Rejection Utility | 2026-09-28 | apps/api/src/core/errors.ts, apps/api/src/modules/auth/auth.routes.ts |
+| Audit-5 | Pipeline Stage-Extract Audit Fixes | 2026-09-30 | apps/api/src/pipeline/stage-extract.ts |
+| Audit-6 | Packages DB Index Audit Verification | 2026-09-30 | packages/db/src/index.ts |
 
 ---
 
@@ -153,6 +155,7 @@ When a task is completed, you MUST update this file in **TWO** locations:
 | 1-1a.2 | wrapError Promise Rejection Utility | `feat(task-1-1a.2): add wrapError utility for modular Promise rejection mapping` | ⏳ Pending |
 | 1-1a.3 | Add Typed Error Classes | `feat(task-1-1a.3): add typed error classes for pipeline stages` | ✅ Pushed |
 | Audit-5 | Pipeline Stage-Extract Audit Fixes | `fix(audit-5): apply fixes for stage-extract` | ⏳ Pending |
+| Audit-6 | Packages DB Index Audit Verification | `fix(audit-6): verify packages_db_src_index.ts card and resolve cfg-1 as false positive` | ⏳ Pending |
 
 ---
 
@@ -341,6 +344,8 @@ When a task is completed, you MUST update this file in **TWO** locations:
 | Audit-2 | apps_api_src_pipeline_orchestrator.ts | 2026-09-28 | Fixed `sys-rel-2` (missing BullMQ retry config; added defaultJobOpts) and `gp-23` (sequential discoverQueue.add replaced with addBulk) |
 | Audit-3 | apps_api_src_pipeline_stage-discover.ts | 2026-09-29 | Fixed `sys-rel-5` (stage timeout budget wrapper), `eff-1a` (bulk article creation), `pip-2` (atomic stats update), `gp-14` (correlation IDs in logs), and `gp-27` (domain-specific typed errors) |
 | Audit-4 | apps_api_src_pipeline_stage-evaluate.ts | 2026-09-29 | Fixed `sys-rel-5` (stage timeout), `sys-rel-6` (batch failure isolation), `eff-1a` (bulk updateMany), `pip-2` (atomic stats updates), `gp-18` (Zod validation for stats), `gp-14` (correlation IDs in logs), and `gp-27` (typed domain errors) |
+| Audit-5 | apps_api_src_pipeline_stage-extract.ts | 2026-09-30 | Fixed `sys-rel-5` (stage timeout), `eff-1a` (bulk article status update), `pip-2` (atomic stats updates), `gp-14` (correlation IDs), `gp-18` (Zod validation for stats), and `gp-27` (typed domain errors) |
+| Audit-6 | packages_db_src_index.ts | 2026-09-30 | Triaged `cfg-1` (process.env in @repo/db) as false positive: shared package cannot import app config; validates NODE_ENV locally with Zod. Card verified clean. |
 
 ### Audit File Registry
 
@@ -350,6 +355,8 @@ When a task is completed, you MUST update this file in **TWO** locations:
 | apps/api/src/pipeline/orchestrator.ts | .audit/cards/apps_api_src_pipeline_orchestrator.ts.card.yml | Added defaultJobOpts (attempts/backoff) to flow jobs and replaced loop with discoverQueue.addBulk | Modified |
 | apps/api/src/pipeline/stage-discover.ts | .audit/cards/apps_api_src_pipeline_stage-discover.ts.card.yml | Wrapped execution in timeout budget, atomized stats update, added correlation IDs and typed errors | Modified |
 | apps/api/src/pipeline/stage-evaluate.ts | .audit/cards/apps_api_src_pipeline_stage-evaluate.ts.card.yml | Wrapped in timeout, isolated DB dedupe failures, batched DB updates, atomized stats, added Zod validation, correlation IDs, and typed errors | Modified |
+| apps/api/src/pipeline/stage-extract.ts | .audit/cards/apps_api_src_pipeline_stage-extract.ts.card.yml | Wrapped in timeout, batched DB updates, atomized stats, added Zod validation, correlation IDs, and typed errors | Modified |
+| packages/db/src/index.ts | .audit/cards/packages_db_src_index.ts.card.yml | Verified false positive for cfg-1; no source code changes required | Verified (Clean) |
 
 ### Audit Git Commit Registry
 
@@ -359,6 +366,8 @@ When a task is completed, you MUST update this file in **TWO** locations:
 | Audit-2 | apps_api_src_pipeline_orchestrator.ts | `audit: Fix sys-rel-2, gp-23 in orchestrator.ts` | ✅ Pushed |
 | Audit-3 | apps_api_src_pipeline_stage-discover.ts | `audit: Fix sys-rel-5, eff-1a, pip-2, gp-14, gp-27 in stage-discover.ts` | ✅ Pushed |
 | Audit-4 | apps_api_src_pipeline_stage-evaluate.ts | `audit: Fix evaluate stage issues and verify card` | ✅ Pushed |
+| Audit-5 | apps_api_src_pipeline_stage-extract.ts | `fix(audit-5): apply fixes for stage-extract` | ⏳ Pending |
+| Audit-6 | packages_db_src_index.ts | `fix(audit-6): verify packages_db_src_index.ts card and resolve cfg-1 as false positive` | ⏳ Pending |
 
 ---
 
@@ -643,3 +652,7 @@ Notes: Fixed sys-rel-5, sys-rel-6, eff-1a, pip-2, gp-18, gp-14, and gp-27.
 Task Audit-5: Pipeline Stage-Extract Audit Fixes — COMPLETED 2026-09-29T23:45:00Z
 Files: apps/api/src/pipeline/stage-extract.ts, .audit/cards/apps_api_src_pipeline_stage-extract.ts.card.yml
 Notes: Fixed sys-rel-5, eff-1a, pip-2, gp-14, gp-18, and gp-27.
+
+Task Audit-6: Packages DB Index Audit Verification — COMPLETED 2026-09-30T00:18:00Z
+Files: packages/db/src/index.ts, .audit/cards/packages_db_src_index.ts.card.yml, .audit/fix-ledger.md
+Notes: Triaged cfg-1 finding (process.env usage). Confirmed as false positive due to architectural boundary of shared monorepo package (@repo/db cannot import apps/api config without circular dependencies, and safely parses NODE_ENV with Zod). Card verified clean and marked skipped in fix-ledger.

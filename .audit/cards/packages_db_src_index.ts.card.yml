@@ -1,0 +1,45 @@
+---
+file: packages/db/src/index.ts
+hash: 853444ae
+purpose_1line: Instantiates and exports the singleton Prisma client and re-exports Prisma models.
+status: clean
+
+# Note: plain.does = non-tech, plain English. purpose_1line = dense, for tech readers. They must not be identical.
+plain:
+  does: Sets up the database connection object so the rest of the application can talk to the database.
+  risks: []
+
+imports:
+  - {name: "@prisma/client", why: "Base Prisma client types and constructor"}
+  - {name: "zod", why: "Environment variable validation"}
+
+api:
+  - {sym: "prisma", kind: "const", purpose: "Singleton instance of PrismaClient", side_effects: "db"}
+  - {sym: "*", kind: "export", purpose: "Re-exports all generated Prisma types and enums", side_effects: "none"}
+
+findings: []
+
+previous_findings:
+  - cat: convention
+    group: resource
+    rule_ref: cfg-1
+    severity: CRITICAL
+    confidence: 1.00
+    evidence:
+      start: 8
+      end: 8
+      hash: "ba759fdc"
+    why: "Accesses process.env directly outside of core/config.ts. [STATUS: RESOLVED - FALSE POSITIVE: shared @repo/db package cannot import app config and validates NODE_ENV locally via Zod]"
+    fix: "Refactor to import the validated database URL from the central config module."
+
+dead_code: []
+modularity: []
+open_questions: []
+meta:
+  analyzer: "Antigravity"
+  reused: false
+  analyzed_at: "2026-09-30T00:18:00.000Z"
+  last_fix_at: "2026-09-30T00:15:27.000Z"
+  passes_run: [0, 1, 2, 3, 4, 5]
+  verify_count: 1
+---

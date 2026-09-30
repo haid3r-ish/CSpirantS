@@ -1,15 +1,15 @@
 # FIX LEDGER
-last_updated: 2026-09-29T05:54:01.000Z
+last_updated: 2026-09-30T00:18:00.000Z
 conventions_version: v16
 
 ## Summary
 total_findings: 36
-open: 19
+open: 18
 in_progress: 0
 fixed_pending_verify: 0
 verified_fixed: 17
 baselined: 0
-skipped: 0
+skipped: 1
 deferred: 0
 
 ## Entries
@@ -330,14 +330,14 @@ entries:
     rule_ref: cfg-1
     severity: CRITICAL
     source: rule
-    status: open
+    status: skipped
     first_seen: 2026-09-27T17:27:40.539Z
-    approved_at: null
-    applied_at: null
-    verified_at: null
-    approach: null
-    commit: null
-    notes: null
+    approved_at: 2026-09-30T00:15:27.000Z
+    applied_at: 2026-09-30T00:15:27.000Z
+    verified_at: 2026-09-30T00:18:00.000Z
+    approach: B
+    commit: 36a84be
+    notes: "False positive: shared monorepo package cannot safely import app config"
   - id: .audit/cards/packages_llm-core_src_prompts_css-pms-filter.ts.card.yml:0
     card: .audit/cards/packages_llm-core_src_prompts_css-pms-filter.ts.card.yml
     file: packages/llm-core/src/prompts/css-pms-filter.ts
