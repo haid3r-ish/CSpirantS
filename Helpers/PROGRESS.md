@@ -112,6 +112,7 @@ When a task is completed, you MUST update this file in **TWO** locations:
 | Bug-3 | PipelineRun Fetch Uses Non-Null Assertion on Potentially Null Value | 2026-10-02 | apps/api/src/pipeline/stage-discover.ts |
 | Inefficiency-3 | stage-evaluate.ts Manual Mode: Two Separate update Calls That Should Be One Transaction | 2026-10-02 | apps/api/src/pipeline/stage-evaluate.ts |
 | Inefficiency-4 | stage-extract.ts Has Dead FlowProducer Import in orchestrator.ts | 2026-10-02 | apps/api/src/pipeline/orchestrator.ts |
+| Inefficiency-1 | stage-evaluate.ts Does Two Separate DB Reads That Could Be One | 2026-10-02 | apps/api/src/pipeline/stage-evaluate.ts |
 
 ---
 
@@ -172,6 +173,7 @@ When a task is completed, you MUST update this file in **TWO** locations:
 | Bug-3 | PipelineRun Fetch Uses Non-Null Assertion on Potentially Null Value | `fix(bug-3): add null check for pipelineRun fetch in stage-discover` | ⏳ Pending |
 | Inefficiency-3 | stage-evaluate.ts Manual Mode: Two Separate update Calls That Should Be One Transaction | `fix(inefficiency-3): wrap manual mode updates in transaction` | ⏳ Pending |
 | Inefficiency-4 | stage-extract.ts Has Dead FlowProducer Import in orchestrator.ts | `fix(inefficiency-4): remove dead FlowProducer instantiation in orchestrator.ts` | ⏳ Pending |
+| Inefficiency-1 | stage-evaluate.ts Does Two Separate DB Reads That Could Be One | `fix(inefficiency-1): wrap independent db reads in Promise.all in stage-evaluate` | ⏳ Pending |
 
 ---
 
@@ -322,6 +324,7 @@ When a task is completed, you MUST update this file in **TWO** locations:
 | apps/api/src/pipeline/stage-discover.ts | Modified | Bug-3 |
 | apps/api/src/pipeline/stage-evaluate.ts | Modified | Inefficiency-3 |
 | apps/api/src/pipeline/orchestrator.ts | Modified | Inefficiency-4 |
+| apps/api/src/pipeline/stage-evaluate.ts | Modified | Inefficiency-1 |
 ---
 
 ## Architecture Decisions Log
@@ -715,3 +718,7 @@ Notes: Wrapped sequential prisma updates in manual mode fallback into a single p
 Task Inefficiency-4: stage-extract.ts Has Dead FlowProducer Import in orchestrator.ts — COMPLETED 2026-10-02T10:39:00Z
 Files: apps/api/src/pipeline/orchestrator.ts
 Notes: Removed dead FlowProducer instantiation inside the manual branch that was creating an unused BullMQ client connection.
+
+Task Inefficiency-1: stage-evaluate.ts Does Two Separate DB Reads That Could Be One — COMPLETED 2026-10-02T10:42:00Z
+Files: apps/api/src/pipeline/stage-evaluate.ts
+Notes: Wrapped sequential and independent Prisma queries for articles and pipelineRun into a single Promise.all call to execute them concurrently and save database round-trip time.

@@ -25,14 +25,15 @@ export async function runEvaluateStage(pipelineRunId: string): Promise<PipelineR
 }
 
 async function _runEvaluateStageLogic(pipelineRunId: string): Promise<PipelineRunStats> {
-  const articles = await prisma.article.findMany({
-    where: { pipelineRunId, status: 'DISCOVERED' },
-    include: { source: true },
-  });
-
-  const pipelineRun = await prisma.pipelineRun.findUnique({
-    where: { id: pipelineRunId },
-  });
+  const [articles, pipelineRun] = await Promise.all([
+    prisma.article.findMany({
+      where: { pipelineRunId, status: 'DISCOVERED' },
+      include: { source: true },
+    }),
+    prisma.pipelineRun.findUnique({
+      where: { id: pipelineRunId },
+    })
+  ]);
 
   if (!pipelineRun) {
     throw new NotFoundError(`Pipeline run ${pipelineRunId} not found`);
