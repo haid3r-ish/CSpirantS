@@ -20,7 +20,6 @@ export async function triggerPipeline(
   if (options.manual) {
     // Manual mode: only run discover stage, then pause for human input
     // Create discover jobs but no evaluate/extract flow
-    const flow = new FlowProducer({ connection: redisConnection });
     // We still discover articles but skip evaluate — pipeline will await manual resolution
     
     await discoverQueue.addBulk(

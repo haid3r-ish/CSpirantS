@@ -111,6 +111,7 @@ When a task is completed, you MUST update this file in **TWO** locations:
 | Bug-2 | Redundant and Racy Duplicate DB Read in stage-discover.ts | 2026-10-02 | apps/api/src/pipeline/stage-discover.ts |
 | Bug-3 | PipelineRun Fetch Uses Non-Null Assertion on Potentially Null Value | 2026-10-02 | apps/api/src/pipeline/stage-discover.ts |
 | Inefficiency-3 | stage-evaluate.ts Manual Mode: Two Separate update Calls That Should Be One Transaction | 2026-10-02 | apps/api/src/pipeline/stage-evaluate.ts |
+| Inefficiency-4 | stage-extract.ts Has Dead FlowProducer Import in orchestrator.ts | 2026-10-02 | apps/api/src/pipeline/orchestrator.ts |
 
 ---
 
@@ -170,6 +171,7 @@ When a task is completed, you MUST update this file in **TWO** locations:
 | Bug-2 | Redundant and Racy Duplicate DB Read in stage-discover.ts | `fix(bug-2): remove redundant duplicate db check in stage-discover` | ⏳ Pending |
 | Bug-3 | PipelineRun Fetch Uses Non-Null Assertion on Potentially Null Value | `fix(bug-3): add null check for pipelineRun fetch in stage-discover` | ⏳ Pending |
 | Inefficiency-3 | stage-evaluate.ts Manual Mode: Two Separate update Calls That Should Be One Transaction | `fix(inefficiency-3): wrap manual mode updates in transaction` | ⏳ Pending |
+| Inefficiency-4 | stage-extract.ts Has Dead FlowProducer Import in orchestrator.ts | `fix(inefficiency-4): remove dead FlowProducer instantiation in orchestrator.ts` | ⏳ Pending |
 
 ---
 
@@ -319,6 +321,7 @@ When a task is completed, you MUST update this file in **TWO** locations:
 | apps/api/src/pipeline/stage-discover.ts | Modified | Bug-2 |
 | apps/api/src/pipeline/stage-discover.ts | Modified | Bug-3 |
 | apps/api/src/pipeline/stage-evaluate.ts | Modified | Inefficiency-3 |
+| apps/api/src/pipeline/orchestrator.ts | Modified | Inefficiency-4 |
 ---
 
 ## Architecture Decisions Log
@@ -708,3 +711,7 @@ Notes: Added explicit null check for pipelineRun to prevent unhandled TypeError 
 Task Inefficiency-3: stage-evaluate.ts Manual Mode: Two Separate update Calls That Should Be One Transaction — COMPLETED 2026-10-02T10:37:00Z
 Files: apps/api/src/pipeline/stage-evaluate.ts
 Notes: Wrapped sequential prisma updates in manual mode fallback into a single prisma.$transaction to prevent incomplete database state on worker crashes.
+
+Task Inefficiency-4: stage-extract.ts Has Dead FlowProducer Import in orchestrator.ts — COMPLETED 2026-10-02T10:39:00Z
+Files: apps/api/src/pipeline/orchestrator.ts
+Notes: Removed dead FlowProducer instantiation inside the manual branch that was creating an unused BullMQ client connection.
