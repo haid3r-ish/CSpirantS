@@ -85,21 +85,22 @@ async function _runEvaluateStageLogic(pipelineRunId: string): Promise<PipelineRu
   const result = await provider.evaluate(items, batch.id);
 
   if (result.mode === 'manual') {
-    await prisma.llmBatch.update({
-      where: { id: batch.id },
-      data: {
-        status: 'AWAITING_MANUAL',
-        promptCsv: result.promptCsv || result.rawResponse || '',
-      },
-    });
-
-    await prisma.pipelineRun.update({
-      where: { id: pipelineRunId },
-      data: {
-        status: 'AWAITING_MANUAL',
-        currentStage: 'EVALUATE',
-      },
-    });
+    await prisma.$transaction([
+      prisma.llmBatch.update({
+        where: { id: batch.id },
+        data: {
+          status: 'AWAITING_MANUAL',
+          promptCsv: result.promptCsv || result.rawResponse || '',
+        },
+      }),
+      prisma.pipelineRun.update({
+        where: { id: pipelineRunId },
+        data: {
+          status: 'AWAITING_MANUAL',
+          currentStage: 'EVALUATE',
+        },
+      }),
+    ]);
 
     return stats;
   }

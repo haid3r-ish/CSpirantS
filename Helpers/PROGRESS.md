@@ -110,6 +110,7 @@ When a task is completed, you MUST update this file in **TWO** locations:
 | Bug-1 | Ghost Extract Run Marks AWAITING_MANUAL as COMPLETED | 2026-10-02 | apps/api/src/pipeline/stage-evaluate.ts, apps/api/src/pipeline/stage-extract.ts |
 | Bug-2 | Redundant and Racy Duplicate DB Read in stage-discover.ts | 2026-10-02 | apps/api/src/pipeline/stage-discover.ts |
 | Bug-3 | PipelineRun Fetch Uses Non-Null Assertion on Potentially Null Value | 2026-10-02 | apps/api/src/pipeline/stage-discover.ts |
+| Inefficiency-3 | stage-evaluate.ts Manual Mode: Two Separate update Calls That Should Be One Transaction | 2026-10-02 | apps/api/src/pipeline/stage-evaluate.ts |
 
 ---
 
@@ -168,6 +169,7 @@ When a task is completed, you MUST update this file in **TWO** locations:
 | Bug-1 | Ghost Extract Run Marks AWAITING_MANUAL as COMPLETED | `fix(bug-1): prevent ghost extract job from marking AWAITING_MANUAL run as COMPLETED` | ⏳ Pending |
 | Bug-2 | Redundant and Racy Duplicate DB Read in stage-discover.ts | `fix(bug-2): remove redundant duplicate db check in stage-discover` | ⏳ Pending |
 | Bug-3 | PipelineRun Fetch Uses Non-Null Assertion on Potentially Null Value | `fix(bug-3): add null check for pipelineRun fetch in stage-discover` | ⏳ Pending |
+| Inefficiency-3 | stage-evaluate.ts Manual Mode: Two Separate update Calls That Should Be One Transaction | `fix(inefficiency-3): wrap manual mode updates in transaction` | ⏳ Pending |
 
 ---
 
@@ -316,6 +318,7 @@ When a task is completed, you MUST update this file in **TWO** locations:
 | apps/api/src/pipeline/stage-extract.ts | Modified | Bug-1 |
 | apps/api/src/pipeline/stage-discover.ts | Modified | Bug-2 |
 | apps/api/src/pipeline/stage-discover.ts | Modified | Bug-3 |
+| apps/api/src/pipeline/stage-evaluate.ts | Modified | Inefficiency-3 |
 ---
 
 ## Architecture Decisions Log
@@ -701,3 +704,7 @@ Notes: Removed redundant findMany DB check for duplicate article hashes across a
 Task Bug-3: PipelineRun Fetch Uses Non-Null Assertion on Potentially Null Value — COMPLETED 2026-10-02T10:35:00Z
 Files: apps/api/src/pipeline/stage-discover.ts
 Notes: Added explicit null check for pipelineRun to prevent unhandled TypeError crashes if the run is deleted during the worker job. Throws NotFoundError if missing.
+
+Task Inefficiency-3: stage-evaluate.ts Manual Mode: Two Separate update Calls That Should Be One Transaction — COMPLETED 2026-10-02T10:37:00Z
+Files: apps/api/src/pipeline/stage-evaluate.ts
+Notes: Wrapped sequential prisma updates in manual mode fallback into a single prisma.$transaction to prevent incomplete database state on worker crashes.
