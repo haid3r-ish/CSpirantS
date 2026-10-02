@@ -179,7 +179,7 @@ When a task is completed, you MUST update this file in **TWO** locations:
 | 9-3a | Dedupe Bloat Fix — Null ghost descriptions | `20473ec` — `fix(task-9-3a): null description on duplicate articles to prevent database bloat` | ✅ Pushed |
 | Bug-1 | Ghost Extract Run Marks AWAITING_MANUAL as COMPLETED | `33059fe` — `fix(bug-1): prevent ghost extract job from marking AWAITING_MANUAL run as COMPLETED` | ✅ Pushed |
 | Bug-2 | Redundant and Racy Duplicate DB Read in stage-discover.ts | `508a2ac` — `fix(bug-2): remove redundant duplicate db check in stage-discover` | ✅ Pushed |
-| Bug-3 | PipelineRun Fetch Uses Non-Null Assertion on Potentially Null Value | `e9a8b79` — `docs: update progress tracker for bug-1, bug-2, and bug-3 fixes` | ✅ Pushed |
+| Bug-3 | PipelineRun Fetch Uses Non-Null Assertion on Potentially Null Value | `508a2ac` — `fix(bug-3): add null check for pipelineRun fetch in stage-discover` | ✅ Pushed |
 | Inefficiency-3 | stage-evaluate.ts Manual Mode: Two Separate update Calls That Should Be One Transaction | `5d08da5` — `fix(inefficiency-3): wrap manual mode updates in transaction` | ✅ Pushed |
 | Inefficiency-4 | stage-extract.ts Has Dead FlowProducer Import in orchestrator.ts | `a53a3cc` — `fix(inefficiency-4): remove dead FlowProducer instantiation in orchestrator.ts` | ✅ Pushed |
 | Inefficiency-1 | stage-evaluate.ts Does Two Separate DB Reads That Could Be One | `52f14de` — `fix(inefficiency-1): wrap independent db reads in Promise.all in stage-evaluate` | ✅ Pushed |
