@@ -107,6 +107,9 @@ When a task is completed, you MUST update this file in **TWO** locations:
 | 1-1a.2 | wrapError Promise Rejection Utility | 2026-09-28 | apps/api/src/core/errors.ts, apps/api/src/modules/auth/auth.routes.ts |
 | Audit-5 | Pipeline Stage-Extract Audit Fixes | 2026-09-30 | apps/api/src/pipeline/stage-extract.ts |
 | Audit-6 | Packages DB Index Audit Verification | 2026-09-30 | packages/db/src/index.ts |
+| Bug-1 | Ghost Extract Run Marks AWAITING_MANUAL as COMPLETED | 2026-10-02 | apps/api/src/pipeline/stage-evaluate.ts, apps/api/src/pipeline/stage-extract.ts |
+| Bug-2 | Redundant and Racy Duplicate DB Read in stage-discover.ts | 2026-10-02 | apps/api/src/pipeline/stage-discover.ts |
+| Bug-3 | PipelineRun Fetch Uses Non-Null Assertion on Potentially Null Value | 2026-10-02 | apps/api/src/pipeline/stage-discover.ts |
 
 ---
 
@@ -162,6 +165,9 @@ When a task is completed, you MUST update this file in **TWO** locations:
 | 4-3c | Extract Stage — Graceful Empty Completion | `fix(task-4-3c): complete pipeline run when zero articles found in extract stage` | ⏳ Pending |
 | 4-2a | Evaluate Stage — Pipeline Stage Transitions | `feat(task-4-2a): track currentStage transition to EXTRACT in stage-evaluate` | ⏳ Pending |
 | 9-3a | Dedupe Bloat Fix — Null ghost descriptions | `fix(task-9-3a): null description on duplicate articles to prevent database bloat` | ⏳ Pending |
+| Bug-1 | Ghost Extract Run Marks AWAITING_MANUAL as COMPLETED | `fix(bug-1): prevent ghost extract job from marking AWAITING_MANUAL run as COMPLETED` | ⏳ Pending |
+| Bug-2 | Redundant and Racy Duplicate DB Read in stage-discover.ts | `fix(bug-2): remove redundant duplicate db check in stage-discover` | ⏳ Pending |
+| Bug-3 | PipelineRun Fetch Uses Non-Null Assertion on Potentially Null Value | `fix(bug-3): add null check for pipelineRun fetch in stage-discover` | ⏳ Pending |
 
 ---
 
@@ -306,6 +312,10 @@ When a task is completed, you MUST update this file in **TWO** locations:
 | apps/api/src/core/errors.ts | Modified | 1-1a.2 |
 | apps/api/src/modules/auth/auth.routes.ts | Modified | 1-1a.2 |
 | apps/api/src/core/errors.ts | Modified | 1-1a.3 |
+| apps/api/src/pipeline/stage-evaluate.ts | Modified | Bug-1 |
+| apps/api/src/pipeline/stage-extract.ts | Modified | Bug-1 |
+| apps/api/src/pipeline/stage-discover.ts | Modified | Bug-2 |
+| apps/api/src/pipeline/stage-discover.ts | Modified | Bug-3 |
 ---
 
 ## Architecture Decisions Log
@@ -679,3 +689,15 @@ Notes: Fixed pipeline run monitoring by updating PipelineRun.currentStage to EXT
 Task 9-3a: Dedupe Bloat Fix — Null ghost descriptions — COMPLETED 2026-09-30T17:52:00Z
 Files: apps/api/src/pipeline/stage-evaluate.ts, apps/api/src/modules/pipeline/llm-batch.service.ts, apps/api/src/modules/pipeline/llm-batch.routes.ts
 Notes: Optimized database storage by setting description to null when marking duplicate articles as DEDUPLICATED, saving significant JSONB block storage while preserving extractedData per user request. Added support for rawResponse and dedup resolution in manual batches.
+
+Task Bug-1: Ghost Extract Run Marks AWAITING_MANUAL as COMPLETED — COMPLETED 2026-10-02T10:30:00Z
+Files: apps/api/src/pipeline/stage-evaluate.ts, apps/api/src/pipeline/stage-extract.ts
+Notes: Fixed bug where ghost extract job fires for empty approvals and marks pipeline status COMPLETED despite being AWAITING_MANUAL. Also ensured `currentStage` transitions to `EVALUATE` when entering manual mode.
+
+Task Bug-2: Redundant and Racy Duplicate DB Read in stage-discover.ts — COMPLETED 2026-10-02T10:33:00Z
+Files: apps/api/src/pipeline/stage-discover.ts
+Notes: Removed redundant findMany DB check for duplicate article hashes across all pipeline runs. Replaced it with relying on Prisma's skipDuplicates: true during createMany, eliminating a wasted database round-trip per indexed page.
+
+Task Bug-3: PipelineRun Fetch Uses Non-Null Assertion on Potentially Null Value — COMPLETED 2026-10-02T10:35:00Z
+Files: apps/api/src/pipeline/stage-discover.ts
+Notes: Added explicit null check for pipelineRun to prevent unhandled TypeError crashes if the run is deleted during the worker job. Throws NotFoundError if missing.
