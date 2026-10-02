@@ -18,7 +18,10 @@ async function executeDiscoverStage(pipelineRunId: string, sourceId: string): Pr
   }
 
   const pipelineRun = await prisma.pipelineRun.findUnique({ where: { id: pipelineRunId } });
-  const targetDate = pipelineRun!.startedAt.toISOString().split('T')[0];
+  if (!pipelineRun) {
+    throw new NotFoundError(`Pipeline run ${pipelineRunId} not found`);
+  }
+  const targetDate = pipelineRun.startedAt.toISOString().split('T')[0];
 
   const stats: PipelineRunStats = {
     discovered: 0,
@@ -59,16 +62,7 @@ async function executeDiscoverStage(pipelineRunId: string, sourceId: string): Pr
           }
         }
 
-        const hashes = Array.from(linkMap.keys());
-        const existingArticles = await prisma.article.findMany({
-          where: { hash: { in: hashes } },
-          select: { hash: true },
-        });
-        const existingHashes = new Set(existingArticles.map((a) => a.hash));
-
-        const newLinks = hashes
-          .filter((h) => !existingHashes.has(h))
-          .map((h) => linkMap.get(h)!);
+        const newLinks = Array.from(linkMap.values());
 
         if (newLinks.length > 0) {
           try {
