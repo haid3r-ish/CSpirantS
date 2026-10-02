@@ -125,7 +125,7 @@ When a task is completed, you MUST update this file in **TWO** locations:
 
 > Remote Repository: [haid3r-ish/CSpirantS](https://github.com/haid3r-ish/CSpirantS)  
 > Target Branch: `main`  
-> Last Pushed: 2026-09-26  
+> Last Pushed: 2026-10-02  
 
 | Task ID | Task Name | Commit Message | Push Status |
 |---------|-----------|----------------|-------------|
@@ -166,24 +166,24 @@ When a task is completed, you MUST update this file in **TWO** locations:
 | 9-7 | Refactor publishedAt to Discover Stage & Improve LLM Prompt | `refactor(task-9-7): Move publishedAt to discover stage and overhaul LLM prompt` | ✅ Pushed |
 | 9-8 | Fix Timezone Shift in LLM Prompt | `fix(task-9-8): Preserve local timezone in LLM prompt formatting` | ✅ Pushed |
 | 9-9 | Add missing sourceIds to Scheduled PipelineRun | `fix(task-9-9): add missing sourceIds payload to slot scheduler pipeline creation` | ✅ Pushed |
-| 1-1a.2 | wrapError Promise Rejection Utility | `a5ca78f` — `feat(task-1-1a.2): add wrapError utility for modular Promise rejection mapping` | ⏳ Pending |
-| Audit-1 | Auth Routes Audit Fixes | `46728fd` — `fix(audit-1): verify auth routes audit card and resolve false positives` | ⏳ Pending |
-| Audit-2 | Pipeline Orchestrator Audit Fixes | `8928385` — `fix(audit-2): attach defaultJobOpts and batch discover jobs in orchestrator` | ⏳ Pending |
-| Audit-3 | Pipeline Stage-Discover Audit Fixes | `960f4f0` — `fix(audit-3): timeout wrapper, atomic stats, and batched inserts in stage-discover` | ⏳ Pending |
-| Audit-4 | Pipeline Stage-Evaluate Audit Fixes | `6147817` — `fix(audit-4): timeout wrapper, isolate dedupe errors, and zod stats in stage-evaluate` | ⏳ Pending |
-| 1-1a.3 | Add Typed Error Classes | `93cc4c4` — `feat(task-1-1a.3): add typed error classes for pipeline stages` | ⏳ Pending |
-| Audit-5 | Pipeline Stage-Extract Audit Fixes | `c9c2d54` — `fix(audit-5): apply fixes for stage-extract` | ⏳ Pending |
-| Audit-6 | Packages DB Index Audit Verification | `51b78c6` — `fix(audit-6): verify packages_db_src_index.ts card and resolve cfg-1 as false positive` | ⏳ Pending |
-| 4-3c | Extract Stage — Graceful Empty Completion | `091bfde` — `fix(task-4-3c): complete pipeline run when zero articles found in extract stage` | ⏳ Pending |
-| 4-2a | Evaluate Stage — Pipeline Stage Transitions | `1f38ac9` — `feat(task-4-2a): track currentStage transition to EXTRACT in stage-evaluate` | ⏳ Pending |
-| 9-3a | Dedupe Bloat Fix — Null ghost descriptions | `20473ec` — `fix(task-9-3a): null description on duplicate articles to prevent database bloat` | ⏳ Pending |
-| Bug-1 | Ghost Extract Run Marks AWAITING_MANUAL as COMPLETED | `33059fe` — `fix(bug-1): prevent ghost extract job from marking AWAITING_MANUAL run as COMPLETED` | ⏳ Pending |
-| Bug-2 | Redundant and Racy Duplicate DB Read in stage-discover.ts | `508a2ac` — `fix(bug-2): remove redundant duplicate db check in stage-discover` | ⏳ Pending |
-| Bug-3 | PipelineRun Fetch Uses Non-Null Assertion on Potentially Null Value | `e9a8b79` — `docs: update progress tracker for bug-1, bug-2, and bug-3 fixes` | ⏳ Pending |
-| Inefficiency-3 | stage-evaluate.ts Manual Mode: Two Separate update Calls That Should Be One Transaction | `5d08da5` — `fix(inefficiency-3): wrap manual mode updates in transaction` | ⏳ Pending |
-| Inefficiency-4 | stage-extract.ts Has Dead FlowProducer Import in orchestrator.ts | `a53a3cc` — `fix(inefficiency-4): remove dead FlowProducer instantiation in orchestrator.ts` | ⏳ Pending |
-| Inefficiency-1 | stage-evaluate.ts Does Two Separate DB Reads That Could Be One | `52f14de` — `fix(inefficiency-1): wrap independent db reads in Promise.all in stage-evaluate` | ⏳ Pending |
-| Inefficiency-2 | stage-evaluate.ts Uses any for Stats — Inconsistency with Other Stages | `18b25b3` — `fix(inefficiency-2): use zod statsSchema to safely parse db stats in stage-evaluate` | ⏳ Pending |
+| 1-1a.2 | wrapError Promise Rejection Utility | `a5ca78f` — `feat(task-1-1a.2): add wrapError utility for modular Promise rejection mapping` | ✅ Pushed |
+| Audit-1 | Auth Routes Audit Fixes | `46728fd` — `fix(audit-1): verify auth routes audit card and resolve false positives` | ✅ Pushed |
+| Audit-2 | Pipeline Orchestrator Audit Fixes | `8928385` — `fix(audit-2): attach defaultJobOpts and batch discover jobs in orchestrator` | ✅ Pushed |
+| Audit-3 | Pipeline Stage-Discover Audit Fixes | `960f4f0` — `fix(audit-3): timeout wrapper, atomic stats, and batched inserts in stage-discover` | ✅ Pushed |
+| Audit-4 | Pipeline Stage-Evaluate Audit Fixes | `6147817` — `fix(audit-4): timeout wrapper, isolate dedupe errors, and zod stats in stage-evaluate` | ✅ Pushed |
+| 1-1a.3 | Add Typed Error Classes | `93cc4c4` — `feat(task-1-1a.3): add typed error classes for pipeline stages` | ✅ Pushed |
+| Audit-5 | Pipeline Stage-Extract Audit Fixes | `c9c2d54` — `fix(audit-5): apply fixes for stage-extract` | ✅ Pushed |
+| Audit-6 | Packages DB Index Audit Verification | `51b78c6` — `fix(audit-6): verify packages_db_src_index.ts card and resolve cfg-1 as false positive` | ✅ Pushed |
+| 4-3c | Extract Stage — Graceful Empty Completion | `091bfde` — `fix(task-4-3c): complete pipeline run when zero articles found in extract stage` | ✅ Pushed |
+| 4-2a | Evaluate Stage — Pipeline Stage Transitions | `1f38ac9` — `feat(task-4-2a): track currentStage transition to EXTRACT in stage-evaluate` | ✅ Pushed |
+| 9-3a | Dedupe Bloat Fix — Null ghost descriptions | `20473ec` — `fix(task-9-3a): null description on duplicate articles to prevent database bloat` | ✅ Pushed |
+| Bug-1 | Ghost Extract Run Marks AWAITING_MANUAL as COMPLETED | `33059fe` — `fix(bug-1): prevent ghost extract job from marking AWAITING_MANUAL run as COMPLETED` | ✅ Pushed |
+| Bug-2 | Redundant and Racy Duplicate DB Read in stage-discover.ts | `508a2ac` — `fix(bug-2): remove redundant duplicate db check in stage-discover` | ✅ Pushed |
+| Bug-3 | PipelineRun Fetch Uses Non-Null Assertion on Potentially Null Value | `e9a8b79` — `docs: update progress tracker for bug-1, bug-2, and bug-3 fixes` | ✅ Pushed |
+| Inefficiency-3 | stage-evaluate.ts Manual Mode: Two Separate update Calls That Should Be One Transaction | `5d08da5` — `fix(inefficiency-3): wrap manual mode updates in transaction` | ✅ Pushed |
+| Inefficiency-4 | stage-extract.ts Has Dead FlowProducer Import in orchestrator.ts | `a53a3cc` — `fix(inefficiency-4): remove dead FlowProducer instantiation in orchestrator.ts` | ✅ Pushed |
+| Inefficiency-1 | stage-evaluate.ts Does Two Separate DB Reads That Could Be One | `52f14de` — `fix(inefficiency-1): wrap independent db reads in Promise.all in stage-evaluate` | ✅ Pushed |
+| Inefficiency-2 | stage-evaluate.ts Uses any for Stats — Inconsistency with Other Stages | `18b25b3` — `fix(inefficiency-2): use zod statsSchema to safely parse db stats in stage-evaluate` | ✅ Pushed |
 
 ---
 
@@ -419,12 +419,12 @@ When a task is completed, you MUST update this file in **TWO** locations:
 
 | Task ID | Card | Commit Message | Push Status |
 |---------|------|----------------|-------------|
-| Audit-1 | apps_api_src_modules_auth_auth.routes.ts | `46728fd` — `fix(audit-1): verify auth routes audit card and resolve false positives` | ⏳ Pending |
-| Audit-2 | apps_api_src_pipeline_orchestrator.ts | `8928385` — `fix(audit-2): attach defaultJobOpts and batch discover jobs in orchestrator` | ⏳ Pending |
-| Audit-3 | apps_api_src_pipeline_stage-discover.ts | `960f4f0` — `fix(audit-3): timeout wrapper, atomic stats, and batched inserts in stage-discover` | ⏳ Pending |
-| Audit-4 | apps_api_src_pipeline_stage-evaluate.ts | `6147817` — `fix(audit-4): timeout wrapper, isolate dedupe errors, and zod stats in stage-evaluate` | ⏳ Pending |
-| Audit-5 | apps_api_src_pipeline_stage-extract.ts | `c9c2d54` — `fix(audit-5): apply fixes for stage-extract` | ⏳ Pending |
-| Audit-6 | packages_db_src_index.ts | `51b78c6` — `fix(audit-6): verify packages_db_src_index.ts card and resolve cfg-1 as false positive` | ⏳ Pending |
+| Audit-1 | apps_api_src_modules_auth_auth.routes.ts | `46728fd` — `fix(audit-1): verify auth routes audit card and resolve false positives` | ✅ Pushed |
+| Audit-2 | apps_api_src_pipeline_orchestrator.ts | `8928385` — `fix(audit-2): attach defaultJobOpts and batch discover jobs in orchestrator` | ✅ Pushed |
+| Audit-3 | apps_api_src_pipeline_stage-discover.ts | `960f4f0` — `fix(audit-3): timeout wrapper, atomic stats, and batched inserts in stage-discover` | ✅ Pushed |
+| Audit-4 | apps_api_src_pipeline_stage-evaluate.ts | `6147817` — `fix(audit-4): timeout wrapper, isolate dedupe errors, and zod stats in stage-evaluate` | ✅ Pushed |
+| Audit-5 | apps_api_src_pipeline_stage-extract.ts | `c9c2d54` — `fix(audit-5): apply fixes for stage-extract` | ✅ Pushed |
+| Audit-6 | packages_db_src_index.ts | `51b78c6` — `fix(audit-6): verify packages_db_src_index.ts card and resolve cfg-1 as false positive` | ✅ Pushed |
 
 ---
 
