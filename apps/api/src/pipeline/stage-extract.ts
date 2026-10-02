@@ -34,6 +34,12 @@ async function executeExtractStage(pipelineRunId: string): Promise<PipelineRunSt
       throw new NotFoundError(`Pipeline run ${pipelineRunId} not found`);
     }
 
+    const stats = pipelineRun.stats as unknown as PipelineRunStats || { discovered: 0, approved: 0, rejected: 0, extracted: 0, failed: 0 };
+
+    if (pipelineRun.status === 'AWAITING_MANUAL') {
+      return stats;
+    }
+
     await prisma.pipelineRun.update({
       where: { id: pipelineRunId },
       data: {
@@ -42,7 +48,6 @@ async function executeExtractStage(pipelineRunId: string): Promise<PipelineRunSt
       }
     });
 
-    const stats = pipelineRun.stats as unknown as PipelineRunStats || { discovered: 0, approved: 0, rejected: 0, extracted: 0, failed: 0 };
     return stats;
   }
 

@@ -97,6 +97,7 @@ async function _runEvaluateStageLogic(pipelineRunId: string): Promise<PipelineRu
       where: { id: pipelineRunId },
       data: {
         status: 'AWAITING_MANUAL',
+        currentStage: 'EVALUATE',
       },
     });
 
