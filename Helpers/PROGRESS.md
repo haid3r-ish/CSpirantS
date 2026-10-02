@@ -113,6 +113,7 @@ When a task is completed, you MUST update this file in **TWO** locations:
 | Inefficiency-3 | stage-evaluate.ts Manual Mode: Two Separate update Calls That Should Be One Transaction | 2026-10-02 | apps/api/src/pipeline/stage-evaluate.ts |
 | Inefficiency-4 | stage-extract.ts Has Dead FlowProducer Import in orchestrator.ts | 2026-10-02 | apps/api/src/pipeline/orchestrator.ts |
 | Inefficiency-1 | stage-evaluate.ts Does Two Separate DB Reads That Could Be One | 2026-10-02 | apps/api/src/pipeline/stage-evaluate.ts |
+| Inefficiency-2 | stage-evaluate.ts Uses any for Stats — Inconsistency with Other Stages | 2026-10-02 | apps/api/src/pipeline/stage-evaluate.ts |
 
 ---
 
@@ -174,6 +175,7 @@ When a task is completed, you MUST update this file in **TWO** locations:
 | Inefficiency-3 | stage-evaluate.ts Manual Mode: Two Separate update Calls That Should Be One Transaction | `fix(inefficiency-3): wrap manual mode updates in transaction` | ⏳ Pending |
 | Inefficiency-4 | stage-extract.ts Has Dead FlowProducer Import in orchestrator.ts | `fix(inefficiency-4): remove dead FlowProducer instantiation in orchestrator.ts` | ⏳ Pending |
 | Inefficiency-1 | stage-evaluate.ts Does Two Separate DB Reads That Could Be One | `fix(inefficiency-1): wrap independent db reads in Promise.all in stage-evaluate` | ⏳ Pending |
+| Inefficiency-2 | stage-evaluate.ts Uses any for Stats — Inconsistency with Other Stages | `fix(inefficiency-2): use zod statsSchema to safely parse db stats in stage-evaluate` | ⏳ Pending |
 
 ---
 
@@ -325,6 +327,7 @@ When a task is completed, you MUST update this file in **TWO** locations:
 | apps/api/src/pipeline/stage-evaluate.ts | Modified | Inefficiency-3 |
 | apps/api/src/pipeline/orchestrator.ts | Modified | Inefficiency-4 |
 | apps/api/src/pipeline/stage-evaluate.ts | Modified | Inefficiency-1 |
+| apps/api/src/pipeline/stage-evaluate.ts | Modified | Inefficiency-2 |
 ---
 
 ## Architecture Decisions Log
@@ -722,3 +725,7 @@ Notes: Removed dead FlowProducer instantiation inside the manual branch that was
 Task Inefficiency-1: stage-evaluate.ts Does Two Separate DB Reads That Could Be One — COMPLETED 2026-10-02T10:42:00Z
 Files: apps/api/src/pipeline/stage-evaluate.ts
 Notes: Wrapped sequential and independent Prisma queries for articles and pipelineRun into a single Promise.all call to execute them concurrently and save database round-trip time.
+
+Task Inefficiency-2: stage-evaluate.ts Uses any for Stats — Inconsistency with Other Stages — COMPLETED 2026-10-02T10:44:00Z
+Files: apps/api/src/pipeline/stage-evaluate.ts
+Notes: Used Zod statsSchema.safeParse() to validate JSON stats from DB to avoid silent failures with malformed data. Matches the standard set in stage-extract.ts.

@@ -3,6 +3,7 @@ import { createLlmProvider } from '@repo/llm-core';
 import type { LlmConfig, LlmEvaluationItem, PipelineRunStats } from '@repo/types';
 import { config } from '../core/config.js';
 import { NotFoundError } from '../core/errors.js';
+import { z } from 'zod';
 
 const EVALUATE_TIMEOUT_MS = 5 * 60 * 1000;
 
@@ -39,7 +40,17 @@ async function _runEvaluateStageLogic(pipelineRunId: string): Promise<PipelineRu
     throw new NotFoundError(`Pipeline run ${pipelineRunId} not found`);
   }
 
-  const dbStats = (pipelineRun.stats as any) || {};
+  const statsSchema = z.object({
+    discovered: z.number().optional(),
+    approved: z.number().optional(),
+    rejected: z.number().optional(),
+    extracted: z.number().optional(),
+    failed: z.number().optional(),
+    deduplicated: z.number().optional(),
+  }).passthrough();
+
+  const parsedStats = statsSchema.safeParse(pipelineRun.stats);
+  const dbStats = parsedStats.success ? parsedStats.data : {};
   const stats: PipelineRunStats = {
     discovered: dbStats.discovered || 0,
     approved: dbStats.approved || 0,
